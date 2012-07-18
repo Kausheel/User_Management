@@ -7,14 +7,14 @@
 		function __construct()
 		{
 			
-			
+			$mysqli = new Database();
+			$mysqli = $mysqli -> connect();
 				
 		}
 		
 		
 		function login($username, $password) 
 		{
-			
 			
 			
 			
@@ -30,7 +30,7 @@
 		function logout() 
 		{
 			
-			
+			session_destroy();
 			
 		}
 		
