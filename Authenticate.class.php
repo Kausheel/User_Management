@@ -1,16 +1,13 @@
 <?php
 
-	require('Database.class.php');
+	require('DB_Config.php');
 	require('Encrypt.class.php');
 	
 	class Authenticate {
 		
 		function __construct()
 		{
-			
-			$mysqli = new Database();
-			$mysqli = $mysqli -> connect();
-				
+			$mysqli = new mysqli(HOST, DB_USERNAME, DB_PASSWORD, DATABASE_NAME);				
 		}
 		
 		
