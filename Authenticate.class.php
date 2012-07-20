@@ -40,7 +40,7 @@
 			
 		}
 		
-		function resetPassword($username)
+		function resetPassword($username, $email)
 		{
 			
 			
