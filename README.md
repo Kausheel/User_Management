@@ -10,9 +10,9 @@ A PHP class giving you the basics: Login, Logout, Register, Forgot Password, and
 - Users login with their email address, but this can be changed if you prefer they use an actual username.
 
 Usage is as simple as:
-	$user -> register($username, $password, $confirmpassword);
-	$user -> login($username, $password);
-	$user -> changepassword($password, $newpassword, $confirmnewpassword);
+- $user -> register($username, $password, $confirmpassword);
+- $user -> login($username, $password);
+- $user -> changepassword($password, $newpassword, $confirmnewpassword);
 etc...
 
 Code contributions are welcome!
