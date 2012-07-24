@@ -242,10 +242,12 @@ class Encrypt {
 
 	function checkpassword($password, $stored_hash)
 	{
+	    
 		$hash = $this->crypt_private($password, $stored_hash);
-		if ($hash[0] == '*')
+		
+		if ($hash[0] == '*' && !empty($stored_hash))
 			$hash = crypt($password, $stored_hash);
-
+        
 		return $hash == $stored_hash;
 	}
 }
