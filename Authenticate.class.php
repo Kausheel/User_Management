@@ -21,14 +21,21 @@
 		
 		function login($username, $password) 
 		{
-		    //Fetch username and password from database
-		    $query ="SELECT {$this -> usercol}, {$this -> passwordcol} FROM {$this -> usertable} WHERE {$this -> usercol} = '$username'";
-			$result = $this -> mysqli -> query($query); 
-            $row = $result -> fetch_assoc();
-            $hash = $row['password'];
+		    //Check variables exist
+		    if(empty($username) || empty($password))
+            {
+                return FALSE;
+            }
             
-            $encrypt = new Encrypt(12, FALSE);
-                        
+		    //Fetch password from database
+			$stmt = $this -> mysqli -> prepare("SELECT {$this -> passwordcol} FROM {$this -> usertable} WHERE {$this -> usercol} = ?");
+            $stmt -> bind_param('s', $username);
+            $stmt -> execute();
+            $stmt -> bind_result($hash);
+            $stmt -> fetch();
+            
+            //Check if the password hashes match
+            $encrypt = new Encrypt(12, FALSE);            
             if($encrypt -> checkpassword($password, $hash))
             {
                 return TRUE;
@@ -52,14 +59,6 @@
 		function resetPassword($username, $email)
 		{
 			
-			
-			
-		}
-		
-		
-		function isUserActive($active)
-		{
-						
 			
 			
 		}
