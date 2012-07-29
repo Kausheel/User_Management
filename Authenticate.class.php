@@ -3,48 +3,66 @@
 	require('DB_Config.php');
 	require('Encrypt.class.php');
 	
-	class Authenticate {
-		
-		private $mysqli;
+	class Authenticate 
+	{
 		
 		//Get the table structure from DB_Config
 		private $usertable = TABLE_OF_USERS;
-		private $usercol = COLUMN_OF_USERS;
+		private $emailcol = COLUMN_OF_EMAILS;
 		private $passwordcol = COLUMN_OF_PASSWORDS;
 		
+        private $mysqli;
+        
 	 	function __construct()
 		{
 			$mysqli = new mysqli(HOST, DB_USERNAME, DB_PASSWORD, DATABASE_NAME);	
 			$this -> mysqli = $mysqli;			
 		}
-		
-		
-		function login($username, $password) 
+
+
+        function login($email, $password) 
 		{
-		    //Check variables exist
-		    if(empty($username) || empty($password))
+		    if($email && $password)
             {
-                return FALSE;
+                //Fetch password from database
+                if($stmt = $this->mysqli->prepare("SELECT $this->passwordcol FROM $this->usertable WHERE $this->emailcol = ?"))
+                {
+                    $stmt->bind_param('s', $email);
+                    $stmt->execute();
+                    $stmt->bind_result($hash);
+                    $stmt->fetch();
+                }
+                else
+                {
+                    return FALSE;
+                }
+                
+                //Check if the password hashes match
+                $encrypt = new Encrypt(12, FALSE);            
+                if($encrypt->checkpassword($password, $hash))
+                {
+                    return TRUE;
+                }            
             }
-            
-		    //Fetch password from database
-			$stmt = $this -> mysqli -> prepare("SELECT {$this -> passwordcol} FROM {$this -> usertable} WHERE {$this -> usercol} = ?");
-            $stmt -> bind_param('s', $username);
-            $stmt -> execute();
-            $stmt -> bind_result($hash);
-            $stmt -> fetch();
-            
-            //Check if the password hashes match
-            $encrypt = new Encrypt(12, FALSE);            
-            if($encrypt -> checkpassword($password, $hash))
-            {
-                return TRUE;
-            }            
         }	
 		
-		function createUser($username, $password, $confirmpassword, $email)
+		function createUser($email, $password, $confirmpassword)
 		{
-			
+		   	if($email && $password && $confirmpassword)
+            {
+                //Add user to database
+                if($stmt = $this->mysqli->prepare("INSERT INTO $this->usertable($this->emailcol, $this->passwordcol) VALUES(?, ?)"))
+                {    
+                    $stmt->bind_param('ss', $email, $password);
+                    $stmt->execute();
+                    $stmt->fetch();
+                }
+                
+                if(!$this->mysqli->error)
+                {
+                    return TRUE;
+                }                                      
+            }
 			
 			
 		}
@@ -56,7 +74,7 @@
 			
 		}
 		
-		function resetPassword($username, $email)
+		function resetPassword($username)
 		{
 			
 			
