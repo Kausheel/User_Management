@@ -1,21 +1,24 @@
 <?php
 
-	require('DB_Config.php');
 	require('Encrypt.class.php');
 	
 	class Authenticate 
 	{
 		
 		//Get the table structure from DB_Config
-		private $usertable = TABLE_OF_USERS;
-		private $emailcol = COLUMN_OF_EMAILS;
-		private $passwordcol = COLUMN_OF_PASSWORDS;
+		private $db_host = YOUR_HOSTNAME;
+        private $db_username = DB_USERNAME;
+        private $db_password = DB_PASSWORD;
+        private $db_name = DB_NAME;
+		private $user_table = TABLE_OF_USERS;
+		private $email_col = COLUMN_OF_EMAILS;
+		private $password_col = COLUMN_OF_PASSWORDS;
 		
         private $mysqli;
         
 	 	function __construct()
 		{
-			$mysqli = new mysqli(HOST, DB_USERNAME, DB_PASSWORD, DATABASE_NAME);	
+			$mysqli = new mysqli($db_host, $db_username, $db_password, $db_name);	
 			$this -> mysqli = $mysqli;			
 		}
 
