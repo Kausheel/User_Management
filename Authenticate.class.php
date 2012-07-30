@@ -14,6 +14,7 @@
 		private $user_table = TABLE_OF_USERS;
 		private $email_col = COLUMN_OF_EMAILS;
 		private $password_col = COLUMN_OF_PASSWORDS;
+        private $validation_hash = COLUMN_OF_EMAIL_VALIDATION_HASHES;
 		
         private $mysqli;
         
@@ -29,7 +30,7 @@
 		    if($email && $password)
             {
                 //Fetch password from database
-                if($stmt = $this->mysqli->prepare("SELECT $this->password_col FROM $this->user_table WHERE $this->email_col = ?"))
+                if($stmt = $this->mysqli->prepare("SELECT `$this->password_col` FROM `$this->user_table` WHERE `$this->email_col` = ?"))
                 {
                     $stmt->bind_param('s', $email);
                     $stmt->execute();
@@ -60,7 +61,7 @@
                     $password = $encrypt->hash_password($password);
                     
                     //Add user to database
-                    if($stmt = $this->mysqli->prepare("INSERT INTO $this->user_table($this->email_col, $this->password_col) VALUES(?, ?)"))
+                    if($stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`) VALUES(?, ?)"))
                     {    
                         $stmt->bind_param('ss', $email, $password);
                         $stmt->execute();
@@ -77,7 +78,24 @@
 			
 		}
         
-        
+        function validate_email()
+        {
+            //Check if the $random_hash has been used before, and if yes, then generate another one until a unique hash is found 
+            if($stmt = $this->mysqli->prepare("SELECT `$this->validation_hash` FROM `$this->user_table` WHERE `$this->validation_hash` = ? LIMIT 1"))
+            {
+                do
+                {
+                    $random_hash = md5(uniqid(rand(), true));    
+                    $stmt->bind_param('s', $random_hash);
+                    $stmt->execute();
+                    $stmt->bind_result($validation_hash);
+                    $stmt->fetch();
+                }
+                while($validation_hash == $random_hash);                                     
+            }
+            
+            
+        }
 		
 		function logout() 
 		{
