@@ -205,7 +205,7 @@ class Encrypt {
 		return $output;
 	}
 
-	function hashpassword($password)
+	function hash_password($password)
 	{
 		$random = '';
 
@@ -240,7 +240,7 @@ class Encrypt {
 		return '*';
 	}
 
-	function checkpassword($password, $stored_hash)
+	function check_password($password, $stored_hash)
 	{
 	    
 		$hash = $this->crypt_private($password, $stored_hash);
