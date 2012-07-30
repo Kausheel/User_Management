@@ -4,12 +4,13 @@
 	
 	class Authenticate 
 	{
-		
-		//Get the table structure from DB_Config
+	    //Define database login details
 		private $db_host = YOUR_HOSTNAME;
         private $db_username = DB_USERNAME;
         private $db_password = DB_PASSWORD;
         private $db_name = DB_NAME;
+        
+        //Define database structure
 		private $user_table = TABLE_OF_USERS;
 		private $email_col = COLUMN_OF_EMAILS;
 		private $password_col = COLUMN_OF_PASSWORDS;
@@ -28,7 +29,7 @@
 		    if($email && $password)
             {
                 //Fetch password from database
-                if($stmt = $this->mysqli->prepare("SELECT $this->passwordcol FROM $this->usertable WHERE $this->emailcol = ?"))
+                if($stmt = $this->mysqli->prepare("SELECT $this->password_col FROM $this->user_table WHERE $this->email_col = ?"))
                 {
                     $stmt->bind_param('s', $email);
                     $stmt->execute();
@@ -42,33 +43,41 @@
                 
                 //Check if the password hashes match
                 $encrypt = new Encrypt(12, FALSE);            
-                if($encrypt->checkpassword($password, $hash))
+                if($encrypt->check_password($password, $hash))
                 {
                     return TRUE;
                 }            
             }
         }	
 		
-		function createUser($email, $password, $confirmpassword)
+		function create_user($email, $password, $confirm_password)
 		{
-		   	if($email && $password && $confirmpassword)
+		   	if($email && $password && $confirm_password)
             {
-                //Add user to database
-                if($stmt = $this->mysqli->prepare("INSERT INTO $this->usertable($this->emailcol, $this->passwordcol) VALUES(?, ?)"))
-                {    
-                    $stmt->bind_param('ss', $email, $password);
-                    $stmt->execute();
-                    $stmt->fetch();
-                }
-                
-                if(!$this->mysqli->error)
+                if($password == $confirm_password)
                 {
-                    return TRUE;
-                }                                      
+                    $encrypt = new Encrypt(12, FALSE);
+                    $password = $encrypt->hash_password($password);
+                    
+                    //Add user to database
+                    if($stmt = $this->mysqli->prepare("INSERT INTO $this->user_table($this->email_col, $this->password_col) VALUES(?, ?)"))
+                    {    
+                        $stmt->bind_param('ss', $email, $password);
+                        $stmt->execute();
+                        $stmt->fetch();
+                    }
+                    
+                    if(!$this->mysqli->error)
+                    {
+                        return TRUE;
+                    }      
+                }                                
             }
 			
 			
 		}
+        
+        
 		
 		function logout() 
 		{
