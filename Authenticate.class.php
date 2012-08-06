@@ -2,50 +2,27 @@
 
 	include('Encrypt.class.php');
     include('class.phpmailer.php');
-	
+	include('Configuration.php');
     class Authenticate 
 	{
-	    //Define database login details
-		private $db_host = YOUR_HOSTNAME;
+	    //The database settings and table structures are inherited from the Configuration.php file.
+		private $db_host = DB_HOST;
         private $db_username = DB_USERNAME;
         private $db_password = DB_PASSWORD;
-        private $db_name = DB_NAME;
-        
-        //Define database structure
-		private $user_table = TABLE_OF_USERS;
-		private $email_col = COLUMN_OF_EMAILS;
-		private $password_col = COLUMN_OF_PASSWORDS;
-        private $email_validation_hash = COLUMN_OF_EMAIL_VALIDATION_HASHES;
-        private $activated = COLUMN_CONFIRMING_ACCOUNT_ACTIVATION;
+        private $db_name = DEFAULT_DB;
+        private $user_table = TABLE_WITH_USERS;
+		private $email_col = COLUMN_WITH_EMAILS;
+		private $password_col = COLUMN_WITH_PASSWORD_HASHES;
+        private $activated_col = COLUMN_CONFIRMING_ACCOUNT_ACTIVATION;
+        private $emailed_hash_col = COLUMN_WITH_EMAILED_HASHES;
 		
         private $mysqli;
         
 	 	function __construct()
 		{
-			$mysqli = new mysqli($db_host, $db_username, $db_password, $db_name);	
-			$this -> mysqli = $mysqli;			
-		}
-
-
-        function login($email, $password) 
-		{
-		    if($email && $password)
-            {
-                //Fetch password from database
-                $stmt = $this->mysqli->prepare("SELECT `$this->password_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
-                $stmt->bind_param('s', $email);
-                $stmt->execute();
-                $stmt->bind_result($hash);
-                $stmt->fetch();
-                                
-                //Check if the password hashes match
-                $encrypt = new Encrypt(12, FALSE);            
-                if($encrypt->check_password($password, $hash))
-                {
-                    return TRUE;
-                }            
-            }
-        }	
+				
+			$this -> mysqli = new mysqli($db_host, $db_username, $db_password, $db_name);			
+        }
 		
 		function create_user($email, $password, $confirm_password)
 		{
@@ -56,13 +33,15 @@
                     $encrypt = new Encrypt(12, FALSE);
                     $password = $encrypt->hash_password($password);
                     
+                    //This prefix is checked when logging in to see if the account has been verified through email. When it's been verified, this prefix is removed.
+                    $password = 'unverified'.$password;
+                    
                     //Add user to database
                     $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`) VALUES(?, ?)");   
                     $stmt->bind_param('ss', $email, $password);
                     $stmt->execute();
-                    $stmt->fetch();
                     
-                    validate_email($username);
+                    validate_email($email);
                                         
                     if(!$this->mysqli->error)
                     {
@@ -70,47 +49,60 @@
                     }      
                 }                                
             }
-			
-			
 		}
         
-        function validate_email($username)
+        function login($email, $password) 
         {
-            //Check if the $random_hash has been used before, and if yes, then generate another one until a unique hash is found 
-            $stmt = $this->mysqli->prepare("SELECT `$this->email_validation_hash` FROM `$this->user_table` WHERE `$this->email_validation_hash` = ? LIMIT 1");
-            do
+            if($email && $password)
             {
-                $random_hash = md5(uniqid(rand(), true));    
-                $stmt->bind_param('s', $random_hash);
+                //Fetch password from database
+                $stmt = $this->mysqli->prepare("SELECT `$this->password_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
+                $stmt->bind_param('s', $email);
                 $stmt->execute();
-                $stmt->bind_result($email_validation_hash);
+                $stmt->bind_result($hash);
                 $stmt->fetch();
+                
+                //Check if the account has been verified.
+                if(strstr($hash, 'unverified') != FALSE)
+                {
+                    return 2;
+                }
+                                               
+                //Check if the password hashes match
+                $encrypt = new Encrypt(12, FALSE);            
+                if($encrypt->check_password($password, $hash))
+                {
+                    return TRUE;
+                }            
             }
-            while($email_validation_hash == $random_hash);                                     
+        }   
+        
+        //Send a link with an embedded unique hash as an email 
+        function validate_email($email)
+        {
+            $random_hash = generate_random_hash();                   
             
             //If the hash was correctly generated, insert it into the database
             if(strlen($random_hash) == 32)
             {
-                $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_validation_hash`) VALUES(?) WHERE `$this->email_col` = ?");
-                $stmt->bind_param('ss', $random_hash, $username);
+                $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->emailed_hash_col`) VALUES(?) WHERE `$this->email_col` = ?");
+                $stmt->bind_param('ss', $random_hash, $email);
                 $stmt->execute();
             }
             
+            //Generate an email
             $mail = new PHPMailer();
-            
             $mail->IsSMTP();                                        //Set mailer to use SMTP
             $mail->Host = "smtp1.example.com;smtp2.example.com";    //Specify main and backup server
             $mail->SMTPAuth = true;                                 //Turn on SMTP authentication
             $mail->Username = "myusername";                         //SMTP username
             $mail->Password = "secretpassword";                     //SMTP password
-            
             $mail->From = "from@example.com";                       //Sender
             $mail->FromName = "Mailer";
             $mail->AddAddress("josh@example.net", "Josh Adams");    //Recipient    
             $mail->AddReplyTo("info@example.com", "Information");   //Optional reply to address
             $mail->WordWrap = 50;                                   //Set word wrap to X amount of characters
             $mail->IsHTML(true);                                    //Set email format to HTML
-            
             $mail->Subject = "Account registration";
             $mail->Body    = "You have received this email because this address was used to register at our website. 
                               If this was you, please click the link below:  
@@ -132,20 +124,28 @@
         //Mark the account as activated
         function account_activated($hash)
         {
-            //Find the hash in the database, and mark the corresponding 'Activated" field to TRUE
-            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->activated` = 'TRUE' WHERE `$this->email_validation_hash` = ?");
+            $stmt = $this->mysqli->prepare("SELECT `$this->password_col` FROM `$this->user_table` WHERE `$this->emailed_hash_col` = ?");
             $stmt->bind_param('s', $hash);
             $stmt->execute();
+            $stmt->bind_result($password);
+            $stmt->fetch();
             
             if($this->mysqli->error)
             {
                 return FALSE;
             }
-            else
-            {
-                return TRUE;
-            }   
+             
+            //The account is now activated, so remove the 'unverified' flag.
+            $password = str_replace('unverified', '', $password);
+            
+            //Update the 'Activated' field to TRUE, and set the modified password.
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->activated_col` = 'TRUE', `$this->password_col` = ? WHERE `$this->emailed_hash_col` = ?");
+            $stmt->bind_param('ss', $password, $hash);
+            $stmt->execute();
+            
+            return empty($this->mysqli->error);
         }
+        
 		function logout() 
 		{
 			
@@ -153,24 +153,96 @@
 			
 		}
 		
-		function resetPassword($username)
+		function reset_password($email)
 		{
-			
-			
-			
-		}
+		    $random_hash = generate_random_hash();
+            
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = ? WHERE `$this->email_col` = ?");
+            $stmt->bind_param('ss', $random_hash, $email);
+            $stmt->execute();
+            
+            if($this->mysqli->error)
+            {
+                 return FALSE;
+            }
+           
+            email(); //ATTENTION!
+        }
 		
-		function changePassword($username, $password, $newpassword, $confirmnewpassword)
+		function change_password($email, $password, $new_password, $confirm_new_password)
 		{
-			
-			
-			
+						
 		}		
-				
 		
-		
-		
-		
-	}
+		function set_password($email, $password)
+        {
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ? WHERE `$this->email_col` = ?");
+            $stmt->bind_param('ss', $password, $email);
+            $stmt->execute();
+            
+            return empty($this->mysqli->error);
+        }		
+        
+        function generate_random_hash()
+        {
+            //Check if the $random_hash has been used before, and if yes, then generate another one until a unique hash is found 
+            $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->emailed_hash_col` = ? LIMIT 1");
+            do
+            {
+                $random_hash = md5(uniqid(rand(), true));    
+                $stmt->bind_param('s', $random_hash);
+                $stmt->execute();
+                $stmt->bind_result($emailed_hash_col);
+                $stmt->fetch();
+            }
+            while($emailed_hash_col == $random_hash);   
+            
+            return $random_hash;             
+        }           
+        
+        //Generate email, inheriting the values of constants from Configuration.php. The $type of email generated is either a registration confirmation or a password reset.
+        function generate_email($email, $type)
+        {
+            $mail = new PHPMailer();
+            
+            if(IS_SMTP === 'TRUE')
+            {
+                $mail->IsSMTP();
+            }                        
+                           
+            $mail->Host = SMTP_SERVERS;
+            
+            if(SMTP_AUTH === 'TRUE')
+            {    
+                $mail->SMTPAuth = true;
+            }                              
+               
+            $mail->Username = SMTP_USERNAME;                         
+            $mail->Password = SMTP_PASSWORD;                     
+            $mail->From = SENDER_ADDRESS;                       
+            $mail->FromName = FROM_NAME;
+            $mail->AddAddress($email);        
+            $mail->AddReplyTo(REPLY_TO);   
+            $mail->WordWrap = WORD_WRAP;
+            
+            if(IS_HTML === 'TRUE')
+            {                                   
+                $mail->IsHTML(true);
+            }
+            
+            if($type == 'registration')
+            {                                    
+                $mail->Subject = REGISTRATION_SUBJECT;
+                $mail->Body = REGISTRATION_BODY;
+                $mail->AltBody = REGISTRATION_ALT_BODY;
+            }
+            elseif($type == 'reset')
+            {
+                $mail->Subject = RESET_SUBJECT;
+                $mail->Body = RESET_BODY;
+                $mail->AltBody = RESET_ALT_BODY;
+            }
+        }
+    }
 
 ?>
