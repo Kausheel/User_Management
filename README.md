@@ -25,18 +25,23 @@ Usage is as simple as:
 USAGE:
 
 To create a new user, just POST the contents of the form and call the create_user() function:
+
 	<body>
 		<?php
+		include('Authentication.class.php');
+		$user = new Authenticate;
 			if(isset($_POST['email'], $_POST['password'], $_POST['confirm_password'])
 			{
 				//Insert code here for validating data, like checking if usernames have valid characters, and passwords are long enough.
-				if(!create_user($_POST['email'], $_POST['password'], $_POST['confirm_password']))
+				
+				if(!$user->create_user($_POST['email'], $_POST['password'], $_POST['confirm_password']))
 				{
 					echo 'Sorry, the passwords did not match';
 				}
 				else
 				{
-					if(!validate_email($_POST['email']))
+					//Send an email with the activation link.
+					if(!$user->validate_email($_POST['email']))
 					{
 						echo 'Failed to generate email';
 					}
@@ -52,4 +57,29 @@ To create a new user, just POST the contents of the form and call the create_use
 			Confirm Password: 	<input type='text' name='confirm_password'> 
 		</form>
 	</body>
+
+When the account activation link has been sent, the URL will contain a variable called 'hash.' You should check the contents of $_GET['hash'] on the same page that you told the user to click on (check the Configuration file).
+At the top of this page, you would have a script with something like:
+	if(isset($_GET['hash']) //Or for better verification that the URL hasn't been tampered with, if(strlen($_GET['hash']) == 32) ... because the size of the hash should ALWAYS be 32.
+	{
+		$user->account_activated($_GET['hash'];
+	}
+This marks the account as activated, and they can then proceed to use the website.
+
+In your login form, you just need a form setup with an email input box and a password input box. Then, with the POST variables, call:
+
+$user->login($_POST['email'], $_POST['password']);
+
+To send the user a link to create a new password after forgetting their old one, call:
+
+$user->reset_password($_POST['email']);
+		
+and the email will be sent.
+
+To logout the user, just call:
+$user->logout();
+to destroy the session.
+
+The change_password() function is incomplete right now.
+
 
