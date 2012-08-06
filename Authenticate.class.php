@@ -90,35 +90,12 @@
                 $stmt->execute();
             }
             
-            //Generate an email
-            $mail = new PHPMailer();
-            $mail->IsSMTP();                                        //Set mailer to use SMTP
-            $mail->Host = "smtp1.example.com;smtp2.example.com";    //Specify main and backup server
-            $mail->SMTPAuth = true;                                 //Turn on SMTP authentication
-            $mail->Username = "myusername";                         //SMTP username
-            $mail->Password = "secretpassword";                     //SMTP password
-            $mail->From = "from@example.com";                       //Sender
-            $mail->FromName = "Mailer";
-            $mail->AddAddress("josh@example.net", "Josh Adams");    //Recipient    
-            $mail->AddReplyTo("info@example.com", "Information");   //Optional reply to address
-            $mail->WordWrap = 50;                                   //Set word wrap to X amount of characters
-            $mail->IsHTML(true);                                    //Set email format to HTML
-            $mail->Subject = "Account registration";
-            $mail->Body    = "You have received this email because this address was used to register at our website. 
-                              If this was you, please click the link below:  
-                              http://localhost/Authentication/test.php?hash=$random_hash"; //The website URL for receiving the hash as a GET variable
-            $mail->AltBody = "This is the body in plain text for non-HTML mail clients";
+            $mail = generate_email($email, 'registration');
             
-            if(!$mail->Send())
-            {
-                return FALSE;
-            }
-            else
+            if($mail->Send())
             {
                 return TRUE;
-            }
-            
-            
+            }        
         }
 		
         //Mark the account as activated
@@ -165,8 +142,13 @@
             {
                  return FALSE;
             }
-           
-            email(); //ATTENTION!
+            
+            $mail = generate_email($email, 'reset');
+            
+            if($mail->Send())
+            {
+                return TRUE;
+            }           
         }
 		
 		function change_password($email, $password, $new_password, $confirm_new_password)
@@ -242,6 +224,8 @@
                 $mail->Body = RESET_BODY;
                 $mail->AltBody = RESET_ALT_BODY;
             }
+            
+            return $mail;
         }
     }
 
