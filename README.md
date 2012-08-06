@@ -22,4 +22,34 @@ Usage is as simple as:
 
 !!!Be sure to thoroughly test all functionality before using in production, because this project is still new and not fully tested.
 
+USAGE:
+
+To create a new user, just POST the contents of the form and call the create_user() function:
+	<body>
+		<?php
+			if(isset($_POST['email'], $_POST['password'], $_POST['confirm_password'])
+			{
+				//Insert code here for validating data, like checking if usernames have valid characters, and passwords are long enough.
+				if(!create_user($_POST['email'], $_POST['password'], $_POST['confirm_password']))
+				{
+					echo 'Sorry, the passwords did not match';
+				}
+				else
+				{
+					if(!validate_email($_POST['email']))
+					{
+						echo 'Failed to generate email';
+					}
+					else
+					{
+						echo 'An email has been sent to you with a link to activate your account';
+					}
+				}
+			?>
+		<form action='index.php' method='post'>
+			Email: 				<input type='text' name='email'>
+			Password: 			<input type='text' name='password'>
+			Confirm Password: 	<input type='text' name='confirm_password'> 
+		</form>
+	</body>
 
