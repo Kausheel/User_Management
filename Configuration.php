@@ -1,5 +1,6 @@
 <?php
     //Define the database/table/column structure here, to be inherited by the Authenticate class.
+    //Column for PASSWORD_HASHES must be 70 bytes, ACCOUNT_ACTIVATION 1 byte, and EMAILED_HASHES 32 bytes.
     define('DB_HOST', 'localhost');
     define('DB_USERNAME', 'my_username');
     define('DB_PASSWORD', 'my_password');
