@@ -92,7 +92,7 @@
 
             if(!$this->mysqli->error)
             {
-                $mail = generate_email($email, 'reset');
+                $mail = generate_email($email, 'reset', $random_hash);
                 
                 if($mail->Send())
                 {
@@ -133,7 +133,7 @@
                 $stmt->execute();
             }
             
-            $mail = generate_email($email, 'registration');
+            $mail = generate_email($email, 'registration', $random_hash);
             
             if($mail->Send())
             {
@@ -165,6 +165,7 @@
             }
         }
         
+        //Generate a unique 32 character long hash, called by create_user() and reset_password().
         private function generate_random_hash()
         {
             //Check if the $random_hash has been used before, and if yes, then generate another one until a unique hash is found.
@@ -186,7 +187,7 @@
         }           
         
         //Generate email, inheriting the values of constants from Configuration.php. The $type of email generated is either a registration confirmation or a password reset.
-        private function generate_email($email, $type)
+        private function generate_email($email, $type, $random_hash)
         {
             $mail = new PHPMailer();
             $mail->Username = SMTP_USERNAME;                         
@@ -229,6 +230,10 @@
             {
                 return FALSE;
             }
+            
+            //Replace the $random_hash placeholder in the Body's URL with the actual hash.
+            $mail->Body = str_replace('$random_hash', $random_hash, $mail->Body);
+            $mail->AltBody = str_replace('$random_hash', $random_hash, $mail->AltBody);
             
             return $mail;
         }
