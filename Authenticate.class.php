@@ -69,6 +69,57 @@
             }    
         }   
         
+        //Change user password.
+        function change_password($email, $password, $new_password, $confirm_new_password)
+        {
+            if($new_password == $confirm_new_password)
+            {
+                if(login($email, $password))
+                {
+                    return set_password($email, $new_password);
+                }
+            }
+        }       
+        
+        //Email a password reset link embedded with a unique hash.
+        function reset_password($email)
+        {
+            $random_hash = generate_random_hash();
+            
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = ? WHERE `$this->email_col` = ?");
+            $stmt->bind_param('ss', $random_hash, $email);
+            $stmt->execute();    
+
+            if(!$this->mysqli->error)
+            {
+                $mail = generate_email($email, 'reset');
+                
+                if($mail->Send())
+                {
+                    return TRUE;
+                }                   
+            }
+        }
+        
+        function logout() 
+        {
+            session_destroy();  
+        }
+        
+        function set_password($email, $password)
+        {
+            //Encrypt password.
+            $encrypt = new Encrypt(12, FALSE);
+            $password = $encrypt->hash_password($password);
+            
+            //Insert password.
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ? WHERE `$this->email_col` = ?");
+            $stmt->bind_param('ss', $password, $email);
+            $stmt->execute();
+                
+            return empty($this->mysqli->error);
+        }       
+        
         //Send a link with an embedded unique hash as an email 
         private function validate_email($email)
         {
@@ -114,62 +165,9 @@
             }
         }
         
-		function logout() 
-		{
-			session_destroy();	
-		}
-		
-        //Email a password reset link embedded with a unique hash.
-		function reset_password($email)
-		{
-		    $random_hash = generate_random_hash();
-		    
-            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = ? WHERE `$this->email_col` = ?");
-            $stmt->bind_param('ss', $random_hash, $email);
-            $stmt->execute();    
-
-            if(!$this->mysqli->error)
-            {
-                $mail = generate_email($email, 'reset');
-                
-                if($mail->Send())
-                {
-                    return TRUE;
-                }                   
-            }
-        }
-		
-		
-		//Change user password.
-		function change_password($email, $password, $new_password, $confirm_new_password)
-		{
-            if($new_password == $confirm_new_password)
-            {
-                if(login($email, $password))
-                {
-                    return set_password($email, $new_password);
-                }
-            }
-		}		
-		
-		function set_password($email, $password)
-        {
-            
-            //Encrypt password.
-            $encrypt = new Encrypt(12, FALSE);
-            $password = $encrypt->hash_password($password);
-            
-            //Insert password.
-            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ? WHERE `$this->email_col` = ?");
-            $stmt->bind_param('ss', $password, $email);
-            $stmt->execute();
-                
-            return empty($this->mysqli->error);
-        }		
-        
         private function generate_random_hash()
         {
-            //Check if the $random_hash has been used before, and if yes, then generate another one until a unique hash is found 
+            //Check if the $random_hash has been used before, and if yes, then generate another one until a unique hash is found.
             $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->emailed_hash_col` = ? LIMIT 1");
             do
             {
