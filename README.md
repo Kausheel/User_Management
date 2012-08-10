@@ -5,13 +5,13 @@ Authentication
 
 A PHP class giving you all the necessary functions for authentication: Login, Logout, Register, Email Confirmation, Forgot Password, and Change Password.
 
-- Database settings are independant from the code, to simplify making changes.
+- Database settings are independant from the code. Just set once in Configuration file.
 - Passwords are hashed with Bcrypt using the PHPass framework.
 - Authentication code is independent from table structure, meaning you don't have to fiddle with the code according to what you've named your tables/columns. 
-- These parameters just have to be set once at the top of the Authenticate file.
+- These parameters just have to be set once in the Configuration file.
 - Email settings and content are independant from code, so you can easily alter them in the Configuration file 
-- The class can generate emails using the PHPMailer library, and sends an email for account activation. 
-- Users login with their email address, but this can be changed if you prefer they use an actual username.
+- The class can generate emails using the PHPMailer library, and sends an email for account activation and forgotten passwords.
+- Users login with their email address.
 
 Usage is as simple as:
 - $user -> create_user($email, $password, $confirm_password);
