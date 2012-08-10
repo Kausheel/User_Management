@@ -34,6 +34,3 @@ At the top of this page, you would have a script with something like:
 	}
 This marks the account as activated, and they can then proceed to use the website.
 
-The change_password() function is incomplete right now.
-
-
