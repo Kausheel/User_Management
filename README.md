@@ -15,7 +15,10 @@ A PHP class giving you all the necessary functions for authentication: Login, Lo
 
 Usage is as simple as:
 - $user -> create_user($email, $password, $confirm_password);
+
+//The return value of login must be checked. If it's TRUE, login() was successful, FALSE means wrong password, and integer 2 means the user still needs to click the registration confirmation link.
 - $user -> login($email, $password);
+
 - $user -> change_password($email, $password, $new_password, $confirm_new_password);
 
 //Ask the user where they want the reset link emailed to. 
