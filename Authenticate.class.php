@@ -154,14 +154,17 @@
 		
 		function set_password($email, $password)
         {
-            if($email && $password)
-            {
-                $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ? WHERE `$this->email_col` = ?");
-                $stmt->bind_param('ss', $password, $email);
-                $stmt->execute();
+            
+            //Encrypt password.
+            $encrypt = new Encrypt(12, FALSE);
+            $password = $encrypt->hash_password($password);
+            
+            //Insert password.
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ? WHERE `$this->email_col` = ?");
+            $stmt->bind_param('ss', $password, $email);
+            $stmt->execute();
                 
-                return empty($this->mysqli->error);
-            }
+            return empty($this->mysqli->error);
         }		
         
         private function generate_random_hash()
