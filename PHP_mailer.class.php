@@ -1,5 +1,5 @@
 <?php
-/*~ class.phpmailer.php
+/*~ Php_mailer.class.php
 .---------------------------------------------------------------------------.
 |  Software: PHPMailer - PHP email class                                    |
 |   Version: 5.2.1                                                          |
@@ -791,7 +791,7 @@ class PHPMailer {
    * @return bool
    */
   protected function SmtpSend($header, $body) {
-    require_once $this->PluginDir . 'class.smtp.php';
+    require_once $this->PluginDir . 'SMTP.class.php';
     $bad_rcpt = array();
 
     if(!$this->SmtpConnect()) {
