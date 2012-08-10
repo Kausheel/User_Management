@@ -22,12 +22,12 @@
     define('WORD_WRAP', 50);
     define('IS_HTML', 'TRUE');
     
-    //The subject and body when an email is sent to confirm registration. The $random_hash embedded in the URL will be str_replaced in the create_user() function.
+    //Define the subject and body when an email is sent to confirm registration. The $random_hash embedded in the URL will be str_replaced in the create_user() function.
     define('REGISTRATION_SUBJECT', 'Thank you for registering!'); 
     define('REGISTRATION_BODY', 'Please click the link below to activate your account: <br> http://name_of_your_website.com/test.php?hash=$random_hash');
     define('REGISTRATION_ALT_BODY', 'This body will be shown when the email client does not support HTML');
     
-    //The subject and body when a user resets their password. THe $random_hash embedded in the URL will be str_replaced in the reset_password() function.
+    //Define the subject and body when a user resets their password. THe $random_hash embedded in the URL will be str_replaced in the reset_password() function.
     define('RESET_SUBJECT', 'You have reset your password');
     define('RESET_BODY', 'To reset your password, please click the link below, and follow the steps to create a new password: <br> http://name_of_your_website.com/test.php?hash=$random_hash');
     define('RESET_ALT_BODY', 'This body will be shown when the email client does not support HTML');
