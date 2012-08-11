@@ -3,6 +3,7 @@
 	include('Encrypt.class.php');
     include('PHP_mailer.class.php');
 	include('Configuration.php');
+    
     class Authenticate 
 	{
 	    //The database settings and table structures are inherited from the Configuration.php file.
@@ -20,7 +21,7 @@
         
 	 	function __construct()
 		{
-			$this->mysqli = new mysqli($db_host, $db_username, $db_password, $db_name);			
+			$this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name);
         }
 		
 		function create_user($email, $password, $confirm_password)
@@ -38,7 +39,7 @@
                   
                 if(!$this->mysqli->error)
                 {
-                    return validate_email($email);    
+                    return $this->validate_email($email);    
                 }
             }                                
         }
@@ -71,9 +72,9 @@
         {
             if($new_password == $confirm_new_password)
             {
-                if(login($email, $password))
+                if($this->login($email, $password))
                 {
-                    return set_password($email, $new_password);
+                    return $this->set_password($email, $new_password);
                 }
             }
         }       
@@ -81,7 +82,7 @@
         //Email a password reset link embedded with a unique hash.
         function reset_password($email)
         {
-            $random_hash = generate_random_hash();
+            $random_hash = $this->generate_random_hash();
             
             //The 'reset' flag will be checked when the password reset link is clicked, to make sure the user did actually request a password reset.
             $random_hash = 'reset'.$random_hash;
@@ -92,7 +93,7 @@
 
             if(!$this->mysqli->error)
             {
-                $mail = generate_email($email, 'reset', $random_hash);
+                $mail = $this->generate_email($email, 'reset', $random_hash);
                 
                 if($mail->Send())
                 {
@@ -147,22 +148,22 @@
         //Send a link with an embedded unique hash as an email. Called by create_user().
         private function validate_email($email)
         {
-            $random_hash = generate_random_hash();      
+            $random_hash = $this->generate_random_hash();      
             $random_hash = 'unverified'.$random_hash;
             
             //Insert the hash into the database.
-            $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->emailed_hash_col`) VALUES(?) WHERE `$this->email_col` = ?");
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = ? WHERE `$this->email_col` = ?");
             $stmt->bind_param('ss', $random_hash, $email);
             $stmt->execute();
             
             if(!$this->mysqli->error)
             {
-                $mail = generate_email($email, 'registration', $random_hash);
+                $mail = $this->generate_email($email, 'registration', $random_hash);
                 
                 if($mail->Send())
                 {
                     return TRUE;
-                }
+                }else{echo $mail->ErrorInfo;}
             }        
         }
 		
@@ -173,7 +174,7 @@
             $new_hash = str_replace('unverified', '', $hash);
                 
             //Update the 'Activated' field to TRUE, and set the modified $hash.
-            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->activated_col` = 'TRUE', `$this->emailed_hash_col` = ? WHERE `$this->emailed_hash_col` = ?");
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->activated_col` = '1', `$this->emailed_hash_col` = ? WHERE `$this->emailed_hash_col` = ?");
             $stmt->bind_param('ss', $new_hash, $hash);
             $stmt->execute();
               
@@ -214,6 +215,7 @@
             $mail->AddReplyTo(REPLY_TO);   
             $mail->WordWrap = WORD_WRAP;
             $mail->Host = SMTP_SERVERS;
+            $mail->Port = PORT;
             
             if(IS_SMTP === 'TRUE')
             {
