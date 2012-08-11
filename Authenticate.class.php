@@ -1,7 +1,7 @@
 <?php
 
 	include('Encrypt.class.php');
-    include('class.phpmailer.php');
+    include('PHP_mailer.class.php');
 	include('Configuration.php');
     class Authenticate 
 	{
@@ -103,7 +103,9 @@
         
         function logout() 
         {
-            session_destroy();  
+            session_start();
+            $_SESSION = array();
+            return session_destroy();  
         }
         
         function set_password($email, $password)
