@@ -132,12 +132,12 @@
         
         function set_password($email, $password)
         {
-            //Encrypt password.
+            //Encrypt the password.
             $encrypt = new Encrypt(12, FALSE);
             $password = $encrypt->hash_password($password);
             
-            //Insert password.
-            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ? WHERE `$this->email_col` = ?");
+            //Insert the password, and delete the emailed_hash column just in case this function was called after a password reset.
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ?, `$this->emailed_hash_col` = '' WHERE `$this->email_col` = ?");
             $stmt->bind_param('ss', $password, $email);
             $stmt->execute();
                 
@@ -166,7 +166,7 @@
             }        
         }
 		
-        //Mark the account as activated when check_hash() returns 'unverified.'
+        //Mark the account as activated.
         function account_activated($hash)
         {
             //Mark the account as activated by removing the 'unverified' flag.
