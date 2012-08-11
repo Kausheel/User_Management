@@ -216,6 +216,7 @@
             $mail->WordWrap = WORD_WRAP;
             $mail->Host = SMTP_SERVERS;
             $mail->Port = PORT;
+            $mail->SMTPSecure = SMTP_SECURE;
             
             if(IS_SMTP === 'TRUE')
             {

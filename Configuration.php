@@ -17,6 +17,7 @@
     define('SMTP_AUTH', 'TRUE');
     define('SMTP_USERNAME', 'my_username');
     define('SMTP_PASSWORD', 'my_password');
+    define('SMTP_SECURE', 'ssl');
     define('PORT', 1000);
     define('SENDER_ADDRESS', 'me@example.com');
     define('FROM_NAME', 'my_name');
