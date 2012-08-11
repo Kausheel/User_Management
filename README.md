@@ -27,6 +27,7 @@ Usage is as simple as:
 //Call set_password when the user has clicked on the link, and sees a form to type in a new password (one that they will remember this time!).
 - $user -> set_password($email, $password);
 
+//To unset all session variables.
 - $user -> logout();
 
 When the account activation link has been sent after using create_user(), the URL will contain a variable called 'hash.' You should check the contents of $_GET['hash'] on the same page that you linked to the user (check the Configuration file).
