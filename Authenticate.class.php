@@ -30,9 +30,6 @@
                 //Generate password.
                 $encrypt = new Encrypt(12, FALSE);
                 $password = $encrypt->hash_password($password);
-                
-                //This prefix is checked when logging in to see if the account has been verified through email. When it's been verified, this prefix is removed.
-                $password = 'unverified'.$password;
                     
                 //Add user to database.
                 $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`) VALUES(?, ?)");   
@@ -48,24 +45,24 @@
         
         function login($email, $password) 
         {
-            //Fetch password from database
-            $stmt = $this->mysqli->prepare("SELECT `$this->password_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
+            //Fetch password and emailed_hash from database, to check if the account has been activated.
+            $stmt = $this->mysqli->prepare("SELECT `$this->password_col`, `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
             $stmt->bind_param('s', $email);
             $stmt->execute();
-            $stmt->bind_result($hash);
+            $stmt->bind_result($password_hash, $emailed_hash);
             $stmt->fetch();
               
             if(!$this->mysqli->error)
             {  
                 //Check if the account has been verified.
-                if(strpos($hash, 'unverified') !== FALSE)
+                if(strpos($emailed_hash, 'unverified') !== FALSE)
                 {
                     return 2;
                 }
                                                 
                 //Check if the password hashes match
                 $encrypt = new Encrypt(12, FALSE);            
-                return $encrypt->check_password($password, $hash);      
+                return $encrypt->check_password($password, $password_hash);      
             }    
         }   
         
@@ -86,6 +83,9 @@
         {
             $random_hash = generate_random_hash();
             
+            //The 'reset' flag will be checked when the password reset link is clicked, to make sure the user did actually request a password reset.
+            $random_hash = 'reset'.$random_hash;
+            
             $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = ? WHERE `$this->email_col` = ?");
             $stmt->bind_param('ss', $random_hash, $email);
             $stmt->execute();    
@@ -99,6 +99,28 @@
                     return TRUE;
                 }                   
             }
+        }
+        
+        //When the GET variable is found in the URL, a user has either clicked a password reset link, OR an email validation link. This function will check the hash and return the type. 
+        function check_hash($hash)
+        {
+            $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->emailed_hash_col` = ?");
+            $stmt->bind_param('s', $hash);
+            $stmt->execute();
+            $stmt->bind_result($result);
+            $stmt->fetch();
+            
+            if($hash === $result)
+            {
+                if(strpos($hash, 'reset') !== FALSE)
+                {
+                    return 'reset';
+                }
+                elseif(strpos($hash, 'unverified') !== FALSE)
+                {
+                    return 'unverified';
+                }  
+            }                 
         }
         
         function logout() 
@@ -122,52 +144,43 @@
             return empty($this->mysqli->error);
         }       
         
-        //Send a link with an embedded unique hash as an email 
+        //Send a link with an embedded unique hash as an email. Called by create_user().
         private function validate_email($email)
         {
             $random_hash = generate_random_hash();      
+            $random_hash = 'unverified'.$random_hash;
             
-            //If the hash was correctly generated, insert it into the database.
-            if(strlen($random_hash) == 32)
-            {
-                $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->emailed_hash_col`) VALUES(?) WHERE `$this->email_col` = ?");
-                $stmt->bind_param('ss', $random_hash, $email);
-                $stmt->execute();
-            }
-            
-            $mail = generate_email($email, 'registration', $random_hash);
-            
-            if($mail->Send())
-            {
-                return TRUE;
-            }        
-        }
-		
-        //Mark the account as activated.
-        function account_activated($hash)
-        {
-            //Retrieve password.
-            $stmt = $this->mysqli->prepare("SELECT `$this->password_col` FROM `$this->user_table` WHERE `$this->emailed_hash_col` = ?");
-            $stmt->bind_param('s', $hash);
+            //Insert the hash into the database.
+            $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->emailed_hash_col`) VALUES(?) WHERE `$this->email_col` = ?");
+            $stmt->bind_param('ss', $random_hash, $email);
             $stmt->execute();
-            $stmt->bind_result($password);
-            $stmt->fetch();
             
             if(!$this->mysqli->error)
             {
-                //Mark the account as activated by removing the 'unverified' flag.
-                $password = str_replace('unverified', '', $password);
+                $mail = generate_email($email, 'registration', $random_hash);
                 
-                //Update the 'Activated' field to TRUE, and set the modified password.
-                $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->activated_col` = 'TRUE', `$this->password_col` = ? WHERE `$this->emailed_hash_col` = ?");
-                $stmt->bind_param('ss', $password, $hash);
-                $stmt->execute();
+                if($mail->Send())
+                {
+                    return TRUE;
+                }
+            }        
+        }
+		
+        //Mark the account as activated when check_hash() returns 'unverified.'
+        function account_activated($hash)
+        {
+            //Mark the account as activated by removing the 'unverified' flag.
+            $new_hash = str_replace('unverified', '', $hash);
                 
-                return empty($this->mysqli->error);
-            }
+            //Update the 'Activated' field to TRUE, and set the modified $hash.
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->activated_col` = 'TRUE', `$this->emailed_hash_col` = ? WHERE `$this->emailed_hash_col` = ?");
+            $stmt->bind_param('ss', $new_hash, $hash);
+            $stmt->execute();
+              
+            return empty($this->mysqli->error);
         }
         
-        //Generate a unique 32 character long hash, called by create_user() and reset_password().
+        //Generate a unique 32 character long hash. Called by create_user(), reset_password() and validate_email().
         private function generate_random_hash()
         {
             //Check if the $random_hash has been used before, and if yes, then generate another one until a unique hash is found.
@@ -189,6 +202,7 @@
         }           
         
         //Generate email, inheriting the values of constants from Configuration.php. The $type of email generated is either a registration confirmation or a password reset.
+        //Called by reset_password() and validate_email().
         private function generate_email($email, $type, $random_hash)
         {
             $mail = new PHPMailer();
