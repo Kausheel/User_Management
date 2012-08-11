@@ -21,20 +21,38 @@ Usage is as simple as:
 
 - $user -> change_password($email, $password, $new_password, $confirm_new_password);
 
-//Ask the user where they want the reset link emailed to. 
+//Ask the user where they want the reset link emailed to. The link will contain a unique hash which corresponds to their email address in the database.  
 - $user -> reset_password($email);
 
+//When the account activation link OR password reset link has been sent, the URL will contain a variable called 'hash.' You should check the contents of $_GET['hash'] on the same page that you linked to the user (check the Configuration file).
+At the top of this page you would have a script with something like:
+	if(isset($_GET['hash']) //Or for better verification that the URL hasn't been tampered with, if(strlen($_GET['hash']) == 32) ... because the size of the hash should ALWAYS be 32.
+	{
+		//The check_hash() function compares the hash in the URL with the database, and if the hash exists, it returns the type of hash i.e email validation OR a password reset.
+		//We check the type of hash to decide what we do next, either show a form for the user to type in a new password after a reset, OR call the activate_account() function.
+		$hash_type = $user->check_hash($_GET['hash']);
+		
+		if($hash_type == 'unverified')
+		{
+			activate_account($_GET['hash']);
+		}
+		elseif($hash_type == 'reset')
+		{
+			//Show a form for the user to type in a new password.
+			//...
+			//End of form.
+			$user->set_password($email, $new_password); 
+		}
+		else
+		{
+			echo 'The hash was not found.';
+		}
+	}
+	
 //Call set_password when the user has clicked on the link, and sees a form to type in a new password (one that they will remember this time!).
-- $user -> set_password($email, $password);
+- $user -> set_password($email, $new_password);
 
 //To unset all session variables.
 - $user -> logout();
 
-When the account activation link has been sent after using create_user(), the URL will contain a variable called 'hash.' You should check the contents of $_GET['hash'] on the same page that you linked to the user (check the Configuration file).
-At the top of this page, you would have a script with something like:
-	if(isset($_GET['hash']) //Or for better verification that the URL hasn't been tampered with, if(strlen($_GET['hash']) == 32) ... because the size of the hash should ALWAYS be 32.
-	{
-		$user->account_activated($_GET['hash'];
-	}
 This marks the account as activated, and they can then proceed to use the website.
-
