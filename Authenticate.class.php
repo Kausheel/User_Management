@@ -96,19 +96,18 @@
             //The 'reset' flag will be checked when the password reset link is clicked, to make sure the user did actually request a password reset.
             $random_hash = 'reset'.$random_hash;
             
+            $mail = $this->generate_email($email, 'reset', $random_hash);
+                
+            if(!$mail->Send())
+            {
+                return FALSE;
+            }                
+                            
             $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = ? WHERE `$this->email_col` = ?");
             $stmt->bind_param('ss', $random_hash, $email);
             $stmt->execute();    
 
-            if(!$this->mysqli->error)
-            {
-                $mail = $this->generate_email($email, 'reset', $random_hash);
-                
-                if($mail->Send())
-                {
-                    return TRUE;
-                }                   
-            }
+            return empty($this->mysqli->error);
         }
         
         //When the GET variable is found in the URL, a user has either clicked a password reset link, OR an email validation link. This function will check the hash and return the type. 
