@@ -14,10 +14,10 @@ A PHP class giving you all the necessary functions for authentication: Login, Lo
 The create_user() function inserts the user into the database, and sends an email with a confirmation link.
 - $auth -> create_user($email, $password, $confirm_password);
 
-The return value of login must be checked. If it's TRUE, login() was successful, FALSE means wrong password, and integer 2 means the user still needs to click the registration confirmation link.
+The return value of login MUST be checked. If it's TRUE, login() was successful, FALSE means wrong password, and integer 2 means the user still needs to click the registration confirmation link.
 - $auth -> login($email, $password);
 
-The existing email/password confirmation is checked before a new password is set, so an error is returned if the user gets their old password wrong.
+The existing email/password confirmation is checked before a new password is set, so an error is returned if the user gets their old password, or the email address is not valid.
 - $auth -> change_password($email, $password, $new_password, $confirm_new_password);
 
 Ask the user where they want the reset link emailed to. The link will contain a unique hash which corresponds to their email address in the database.  The email they type in MUST be the same as the one they used when registering. 
@@ -52,8 +52,8 @@ We check the type of hash to decide what we do next, either show a form for the 
     }
 The account_activated() function changes the value of a boolean database column to 1, meaning the account has been activated. It also deletes the emailed_hash, so the emailed link is now dead.
 
-Call set_password when the user has clicked on the link, and sees a form to type in a new password (one that they will remember this time!).
-- $auth -> set_password($email, $new_password);
+Call set_password when the user has clicked on the link, and sees a form to type in a new password (one that they will remember this time!). This will return FALSE if the 2 passwords do not match or the $email is not in the database.
+- $auth -> set_password($email, $password, $confirm_password);
 
 To destroy all session variables.
 - $auth -> logout();
