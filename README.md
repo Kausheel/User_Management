@@ -27,7 +27,7 @@ Ask the user where they want the reset link emailed to. The link will contain a 
 When the account activation link OR password reset link has been sent, the URL will contain a variable called 'hash.' You should check the contents of $_GET['hash'] on the same page that you linked to the user (check the Configuration file).
 The check_hash() function compares the hash in the URL with the database, and if the hash exists, it returns the type of hash i.e email validation OR a password reset.
 We check the type of hash to decide what we do next, either show a form for the user to type in a new password after a reset, OR call the activate_account() function.
-<?php
+
 	include('Authenticate.class.php');
     $auth = new Authenticate();
 	    
@@ -50,7 +50,7 @@ We check the type of hash to decide what we do next, either show a form for the 
             echo 'Link to "Set New Password" page.';
         }
     }
-?>
+
 Call set_password when the user has clicked on the link, and sees a form to type in a new password (one that they will remember this time!).
 - $user -> set_password($email, $new_password);
 
