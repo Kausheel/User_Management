@@ -48,6 +48,8 @@
                 $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`, `$this->emailed_hash_col`) VALUES(?, ?, ?)");   
                 $stmt->bind_param('sss', $email, $password, $random_hash);
                 $stmt->execute();
+                
+                return empty($this->mysqli->error);
             }                                
         }
         
