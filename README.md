@@ -25,29 +25,30 @@ Usage is as simple as:
 - $user -> reset_password($email);
 
 //When the account activation link OR password reset link has been sent, the URL will contain a variable called 'hash.' You should check the contents of $_GET['hash'] on the same page that you linked to the user (check the Configuration file).
-At the top of this page you would have a script with something like:
-	if(isset($_GET['hash']) //Or for better verification that the URL hasn't been tampered with, if(strlen($_GET['hash']) == 32) ... because the size of the hash should ALWAYS be 32.
-	{
-		//The check_hash() function compares the hash in the URL with the database, and if the hash exists, it returns the type of hash i.e email validation OR a password reset.
-		//We check the type of hash to decide what we do next, either show a form for the user to type in a new password after a reset, OR call the activate_account() function.
-		$hash_type = $user->check_hash($_GET['hash']);
-		
-		if($hash_type == 'unverified')
-		{
-			activate_account($_GET['hash']);
-		}
-		elseif($hash_type == 'reset')
-		{
-			//Show a form for the user to type in a new password.
-			//...
-			//End of form.
-			$user->set_password($email, $new_password); 
-		}
-		else
-		{
-			echo 'The hash was not found.';
-		}
-	}
+//The check_hash() function compares the hash in the URL with the database, and if the hash exists, it returns the type of hash i.e email validation OR a password reset.
+//We check the type of hash to decide what we do next, either show a form for the user to type in a new password after a reset, OR call the activate_account() function.
+	include('Authenticate.class.php');
+    $auth = new Authenticate();
+	    
+    if(strlen($_GET['hash']) == 42)
+    {
+        $hash_type = $auth->check_hash($_GET['hash']);
+        if($hash_type == 'unverified')
+        {
+            if(!$auth->account_activated($_GET['hash']))
+            {
+                echo 'Error: The hash does not exist. <br> Proceed to login page.';
+            }
+            else
+            {
+                echo 'Your account has been activated. REDIRECT TO LOGIN PAGE';
+            }
+        }
+        elseif($hash_type == 'reset')
+        {
+            echo 'Link to "Set New Password" page.';
+        }
+    }
 	
 //Call set_password when the user has clicked on the link, and sees a form to type in a new password (one that they will remember this time!).
 - $user -> set_password($email, $new_password);
