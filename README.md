@@ -5,15 +5,13 @@ Authentication
 
 A PHP class giving you all the necessary functions for authentication: Login, Logout, Register, Email Confirmation, Reset Password, and Change Password.
 
-- Database settings are independant from the code. Just set once in Configuration file.
-- Passwords are hashed with Bcrypt using the PHPass framework.
-- Authentication code is independent from table structure, meaning you don't have to fiddle with the code according to what you've named your tables/columns. 
-- These parameters just have to be set once in the Configuration file.
-- Email settings and content are independant from code, so you can easily alter them in the Configuration file 
+- Database settings, table structure, and email/SMTP settings are independant from the code. Just set once in Configuration file.
+- Passwords are hashed with Bcrypt using the PHPass framework. 
 - The class can generate emails using the PHPMailer library, and sends an email for account activation and forgotten passwords.
 - Users login with their email address.
+- MySQL Prepared Statements are used to protect from injection.
 
-Usage is as simple as:
+The create_user() function inserts the user into the database, and sends an email with a confirmation link.
 - $auth -> create_user($email, $password, $confirm_password);
 
 The return value of login must be checked. If it's TRUE, login() was successful, FALSE means wrong password, and integer 2 means the user still needs to click the registration confirmation link.
@@ -23,7 +21,6 @@ The existing email/password confirmation is checked before a new password is set
 - $auth -> change_password($email, $password, $new_password, $confirm_new_password);
 
 Ask the user where they want the reset link emailed to. The link will contain a unique hash which corresponds to their email address in the database.  The email they type in MUST be the same as the one they used when registering. 
-
 Important note: when the reset_password() function is called, the existing password IS STILL VALID. I allowed this because sometimes a user asks for a password reset, but then suddenly remembers their old password, and tries to login with that.  
 - $auth -> reset_password($email);
 
