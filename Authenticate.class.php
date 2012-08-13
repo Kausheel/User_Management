@@ -15,8 +15,7 @@
 		private $email_col = COLUMN_WITH_EMAILS;
 		private $password_col = COLUMN_WITH_PASSWORD_HASHES;
         private $activated_col = COLUMN_CONFIRMING_ACCOUNT_ACTIVATION;
-        private $emailed_hash_col = COLUMN_WITH_EMAILED_HASHES;
-		
+        private $emailed_hash_col = COLUMN_WITH_EMAILED_HASHES;		
         private $mysqli;
         
 	 	function __construct()
@@ -28,19 +27,27 @@
 		{
             if($password == $confirm_password)
             {
-                //Generate password.
+                //Generate the password.
                 $encrypt = new Encrypt(12, FALSE);
                 $password = $encrypt->hash_password($password);
+                
+                //Generate the random hash.
+                $random_hash = $this->generate_random_hash();      
+                $random_hash = 'unverified'.$random_hash;
                     
-                //Add user to database.
-                $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`) VALUES(?, ?)");   
-                $stmt->bind_param('ss', $email, $password);
-                $stmt->execute();
-                  
-                if(!$this->mysqli->error)
+                //Generate the email.
+                $mail = $this->generate_email($email, 'registration', $random_hash);
+                
+                //Send the email.
+                if(!$mail->Send())
                 {
-                    return $this->validate_email($email);    
+                    return FALSE;
                 }
+                
+                //Add the email, password, and random hash to the database.
+                $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`, `$this->emailed_hash_col`) VALUES(?, ?, ?)");   
+                $stmt->bind_param('sss', $email, $password, $random_hash);
+                $stmt->execute();
             }                                
         }
         
@@ -144,28 +151,6 @@
                 
             return empty($this->mysqli->error);
         }       
-        
-        //Send a link with an embedded unique hash as an email. Called by create_user().
-        private function validate_email($email)
-        {
-            $random_hash = $this->generate_random_hash();      
-            $random_hash = 'unverified'.$random_hash;
-            
-            //Insert the hash into the database.
-            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = ? WHERE `$this->email_col` = ?");
-            $stmt->bind_param('ss', $random_hash, $email);
-            $stmt->execute();
-            
-            if(!$this->mysqli->error)
-            {
-                $mail = $this->generate_email($email, 'registration', $random_hash);
-                
-                if($mail->Send())
-                {
-                    return TRUE;
-                }else{echo $mail->ErrorInfo;}
-            }        
-        }
 		
         //Mark the account as activated.
         function account_activated($hash)
@@ -181,7 +166,7 @@
             return empty($this->mysqli->error);
         }
         
-        //Generate a unique 32 character long hash. Called by create_user(), reset_password() and validate_email().
+        //Generate a unique 32 character long hash. Called by create_user() and reset_password().
         private function generate_random_hash()
         {
             //Check if the $random_hash has been used before, and if yes, then generate another one until a unique hash is found.
@@ -203,7 +188,7 @@
         }           
         
         //Generate email, inheriting the values of constants from Configuration.php. The $type of email generated is either a registration confirmation or a password reset.
-        //Called by reset_password() and validate_email().
+        //Called by reset_password() and create_user().
         private function generate_email($email, $type, $random_hash)
         {
             $mail = new PHPMailer();
