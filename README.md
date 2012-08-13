@@ -3,7 +3,7 @@ WARNING! This class is incomplete, various features are still being developed.
 Authentication
 ==================
 
-A PHP class giving you all the necessary functions for authentication: Login, Logout, Register, Email Confirmation, Forgot Password, and Change Password.
+A PHP class giving you all the necessary functions for authentication: Login, Logout, Register, Email Confirmation, Reset Password, and Change Password.
 
 - Database settings are independant from the code. Just set once in Configuration file.
 - Passwords are hashed with Bcrypt using the PHPass framework.
@@ -14,15 +14,16 @@ A PHP class giving you all the necessary functions for authentication: Login, Lo
 - Users login with their email address.
 
 Usage is as simple as:
-- $user -> create_user($email, $password, $confirm_password);
+- $auth -> create_user($email, $password, $confirm_password);
 
 The return value of login must be checked. If it's TRUE, login() was successful, FALSE means wrong password, and integer 2 means the user still needs to click the registration confirmation link.
-- $user -> login($email, $password);
+- $auth -> login($email, $password);
 
-- $user -> change_password($email, $password, $new_password, $confirm_new_password);
+The existing email/password confirmation is checked before a new password is set, so an error is returned if the user gets their old password wrong.
+- $auth -> change_password($email, $password, $new_password, $confirm_new_password);
 
-Ask the user where they want the reset link emailed to. The link will contain a unique hash which corresponds to their email address in the database.  
-- $user -> reset_password($email);
+Ask the user where they want the reset link emailed to. The link will contain a unique hash which corresponds to their email address in the database.  The email they type in MUST be the same as the one they used when registering. 
+- $auth -> reset_password($email);
 
 When the account activation link OR password reset link has been sent, the URL will contain a variable called 'hash.' You should check the contents of $_GET['hash'] on the same page that you linked to the user (check the Configuration file).
 The check_hash() function compares the hash in the URL with the database, and if the hash exists, it returns the type of hash i.e email validation OR a password reset.
@@ -38,7 +39,7 @@ We check the type of hash to decide what we do next, either show a form for the 
         {
             if(!$auth->account_activated($_GET['hash']))
             {
-                echo 'Error: The hash does not exist. <br> Proceed to login page.';
+                echo 'Error: The hash does not exist. <br> REDIRECT TO LOGIN PAGE.';
             }
             else
             {
@@ -50,11 +51,10 @@ We check the type of hash to decide what we do next, either show a form for the 
             echo 'Link to "Set New Password" page.';
         }
     }
-
+The account_activated() function changes the value of a boolean database column to 1, meaning the account has been activated. It also deletes the emailed_hash, so the emailed link is now dead.
+- 
 Call set_password when the user has clicked on the link, and sees a form to type in a new password (one that they will remember this time!).
-- $user -> set_password($email, $new_password);
+- $auth -> set_password($email, $new_password);
 
-To unset all session variables.
-- $user -> logout();
-
-This marks the account as activated, and they can then proceed to use the website.
+To destroy all session variables.
+- $auth -> logout();
