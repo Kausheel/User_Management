@@ -157,12 +157,12 @@
         //Mark the account as activated.
         function account_activated($hash)
         {
-            //Mark the account as activated by removing the 'unverified' flag.
-            $new_hash = str_replace('unverified', '', $hash);
-                
-            //Update the 'Activated' field to TRUE, and set the modified $hash.
+            //Replace the emailed_hash_col with an empty value.
+            $blank = '';          
+            
+            //Update the 'Activated' field to TRUE, and delete the $hash.
             $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->activated_col` = '1', `$this->emailed_hash_col` = ? WHERE `$this->emailed_hash_col` = ?");
-            $stmt->bind_param('ss', $new_hash, $hash);
+            $stmt->bind_param('ss', $blank, $hash);
             $stmt->execute();
               
             return empty($this->mysqli->error);
