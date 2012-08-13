@@ -23,6 +23,8 @@ The existing email/password confirmation is checked before a new password is set
 - $auth -> change_password($email, $password, $new_password, $confirm_new_password);
 
 Ask the user where they want the reset link emailed to. The link will contain a unique hash which corresponds to their email address in the database.  The email they type in MUST be the same as the one they used when registering. 
+
+Important note: when the reset_password() function is called, the existing password IS STILL VALID. I allowed this because sometimes a user asks for a password reset, but then suddenly remembers their old password, and tries to login with that.  
 - $auth -> reset_password($email);
 
 When the account activation link OR password reset link has been sent, the URL will contain a variable called 'hash.' You should check the contents of $_GET['hash'] on the same page that you linked to the user (check the Configuration file).
