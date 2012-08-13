@@ -52,7 +52,7 @@ We check the type of hash to decide what we do next, either show a form for the 
         }
     }
 The account_activated() function changes the value of a boolean database column to 1, meaning the account has been activated. It also deletes the emailed_hash, so the emailed link is now dead.
-- 
+
 Call set_password when the user has clicked on the link, and sees a form to type in a new password (one that they will remember this time!).
 - $auth -> set_password($email, $new_password);
 
