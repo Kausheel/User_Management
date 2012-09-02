@@ -18,6 +18,7 @@
         private $emailed_hash_col = COLUMN_WITH_EMAILED_HASHES;		
         private $mysqli;
         
+        //Start a database connection.
 	 	function __construct()
 		{
 			$this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name);
@@ -27,11 +28,11 @@
 		{
             if($password == $confirm_password)
             {
-                //Generate the password.
+                //Encrypt the password.
                 $encrypt = new Encrypt(12, FALSE);
                 $password = $encrypt->hash_password($password);
                 
-                //Generate the random hash.
+                //Generate the random hash to be sent in the email confirmation link.
                 $random_hash = $this->generate_random_hash();      
                 $random_hash = 'unverified'.$random_hash;
                     
@@ -81,6 +82,7 @@
         {
             if($new_password == $confirm_new_password)
             {
+                //Test the user's credentials. 
                 if($this->login($email, $password))
                 {
                     return $this->set_password($email, $new_password);
@@ -96,6 +98,7 @@
             //The 'reset' flag will be checked when the password reset link is clicked, to make sure the user did actually request a password reset.
             $random_hash = 'reset'.$random_hash;
             
+            //Generate email.
             $mail = $this->generate_email($email, 'reset', $random_hash);
                 
             if(!$mail->Send())
@@ -103,6 +106,7 @@
                 return FALSE;
             }                
                             
+            //Insert the $random_hash into the database.
             $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = ? WHERE `$this->email_col` = ?");
             $stmt->bind_param('ss', $random_hash, $email);
             $stmt->execute();    
@@ -113,6 +117,8 @@
         //When the GET variable is found in the URL, a user has either clicked a password reset link, OR an email validation link. This function will check the hash and return the type. 
         function check_hash($hash)
         {
+            //Attempt to find the URL hash in the database. If it exists, bind_result($result) should contain exactly what we searched for. If not, the hash doesn't exist.
+            //A non-existent hash means the user must've malformed the hash in the URL manually.
             $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->emailed_hash_col` = ?");
             $stmt->bind_param('s', $hash);
             $stmt->execute();
@@ -121,6 +127,7 @@
             
             if($hash === $result)
             {
+                //The suffix of the hash is now checked. 'reset' means the user asked for a password reset, and 'unverified' means the account was just created.
                 if(strpos($hash, 'reset') !== FALSE)
                 {
                     return 'reset';
@@ -145,7 +152,7 @@
             $encrypt = new Encrypt(12, FALSE);
             $password = $encrypt->hash_password($password);
                
-            //Insert the password, and delete the emailed_hash column just in case this function was called after a password reset.
+            //Insert the password, and delete the emailed_hash column since we want it to be empty when we are not awaiting an email link to be clicked.
             $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ?, `$this->emailed_hash_col` = '' WHERE `$this->email_col` = ?");
             $stmt->bind_param('ss', $password, $email);
             $stmt->execute();
@@ -159,7 +166,7 @@
             //Replace the emailed_hash_col with an empty value.
             $blank = '';          
             
-            //Update the 'Activated' field to TRUE, and delete the $hash.
+            //Update the 'Activated' field to TRUE, and delete the emailed_hash_column.
             $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->activated_col` = '1', `$this->emailed_hash_col` = ? WHERE `$this->emailed_hash_col` = ?");
             $stmt->bind_param('ss', $blank, $hash);
             $stmt->execute();
@@ -170,7 +177,7 @@
         //Generate a unique 32 character long hash. Called by create_user() and reset_password().
         private function generate_random_hash()
         {
-            //Check if the $random_hash has been used before, and if yes, then generate another one until a unique hash is found.
+            //Create a $random_hash and check if it already exists in the database, and if yes, then generate another one until a unique hash is found.
             $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->emailed_hash_col` = ? LIMIT 1");
             do
             {
@@ -189,7 +196,6 @@
         }           
         
         //Generate email, inheriting the values of constants from Configuration.php. The $type of email generated is either a registration confirmation or a password reset.
-        //Called by reset_password() and create_user().
         private function generate_email($email, $type, $random_hash)
         {
             $mail = new PHPMailer();
