@@ -3,11 +3,26 @@ Authentication
 
 A PHP class giving you all the necessary functions for authentication: Login, Logout, Register, Email Confirmation, Reset Password, and Change Password.
 
+API Summary:
+
+- create_user($email, $password, $confirm_password)
+- login($email, $password)
+- change_password($email, $password, $new_password, $confirm_new_password)
+- reset_password($email)
+- logout()
+- check_hash($hash)
+- account_activated($hash)
+- set_password($email, $password)
+
+Features:
+
 - Database settings, table structure, and email/SMTP settings are independant from the code. Just set once in Configuration file.
 - Passwords are hashed with Bcrypt using the PHPass framework. 
 - The class can generate emails using the PHPMailer library, and sends an email for account activation and forgotten passwords.
 - Users login with their email address.
 - MySQL Prepared Statements are used to protect from injection.
+
+Usage:
 
 The create_user() function inserts the user into the database, and sends an email with a confirmation link.
 - $auth -> create_user($email, $password, $confirm_password);
