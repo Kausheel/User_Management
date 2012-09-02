@@ -1,7 +1,7 @@
 Authentication
 ==================
 
-A PHP class giving you all the necessary functions for authentication: Login, Logout, Register, Email Confirmation, Reset Password, and Change Password.
+A PHP class giving you all the necessary functions for authentication.
 
 API Summary:
 
