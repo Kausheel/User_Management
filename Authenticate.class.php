@@ -28,9 +28,7 @@
 		{
             if($password == $confirm_password)
             {
-                //Encrypt the password.
-                $encrypt = new Encrypt(12, FALSE);
-                $password = $encrypt->hash_password($password);
+                $password = $this->encrypt_password($password);
                 
                 //Generate the random hash to be sent in the email confirmation link.
                 $random_hash = $this->generate_random_hash();      
@@ -77,7 +75,6 @@
             }    
         }   
         
-        //Change user password.
         function change_password($email, $password, $new_password, $confirm_new_password)
         {
             if($new_password == $confirm_new_password)
@@ -148,9 +145,7 @@
         
         function set_password($email, $password)
         {
-            //Encrypt the password.
-            $encrypt = new Encrypt(12, FALSE);
-            $password = $encrypt->hash_password($password);
+            $password = $this->encrypt_password($password);
                
             //Insert the password, and delete the emailed_hash column since we want it to be empty when we are not awaiting an email link to be clicked.
             $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ?, `$this->emailed_hash_col` = '' WHERE `$this->email_col` = ?");
@@ -163,7 +158,7 @@
         //Mark the account as activated.
         function account_activated($hash)
         {
-            //Replace the emailed_hash_col with an empty value.
+            //We replace the emailed_hash_col with an empty value.
             $blank = '';          
             
             //Update the 'Activated' field to TRUE, and delete the emailed_hash_column.
@@ -172,6 +167,14 @@
             $stmt->execute();
               
             return empty($this->mysqli->error);
+        }
+        
+        private function encrypt_password($password)
+        {
+            $encrypt = new Encrypt(12, FALSE);
+            $password = $encrypt->hash_password($password);
+            
+            return $password;
         }
         
         //Generate a unique 32 character long hash. Called by create_user() and reset_password().
