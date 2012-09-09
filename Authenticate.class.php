@@ -10,7 +10,7 @@
 		private $db_host = DB_HOST;
         private $db_username = DB_USERNAME;
         private $db_password = DB_PASSWORD;
-        private $db_name = DEFAULT_DB;
+        private $db_name = DB_NAME;
         private $user_table = TABLE_WITH_USERS;
 		private $email_col = COLUMN_WITH_EMAILS;
 		private $password_col = COLUMN_WITH_PASSWORD_HASHES;

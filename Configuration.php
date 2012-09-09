@@ -4,7 +4,7 @@
     define('DB_HOST', 'localhost');
     define('DB_USERNAME', 'my_username');
     define('DB_PASSWORD', 'my_password');
-    define('DEFAULT_DB', 'database_name');
+    define('DB_NAME', 'database_name');
     define('TABLE_WITH_USERS', 'table_name');
     define('COLUMN_WITH_EMAILS', 'column_name');
     define('COLUMN_WITH_PASSWORD_HASHES', 'column_name');
