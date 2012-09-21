@@ -1,9 +1,9 @@
-This whole module is in PUBLIC DOMAIN, so you can do whatever you want with it.
+This whole module is in PUBLIC DOMAIN, so you can do whatever you want with it as there are no license restrictions.
 
 Authentication 
 =====================
 
-A PHP class giving you all the necessary functions for authentication.
+A PHP class giving you all the necessary functions for authenticating and managing users.
 
 API Summary:
 
