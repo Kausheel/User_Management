@@ -1,31 +1,31 @@
 <?php
 
-	include('Encrypt.class.php');
+    include('Encrypt.class.php');
     include('PHP_mailer.class.php');
-	include('Configuration.php');
+    include('Configuration.php');
     
     class Authenticate 
-	{
-	    //The database settings and table structures are inherited from the Configuration.php file.
-		private $db_host = DB_HOST;
+    {
+        //The database settings and table structures are inherited from the Configuration.php file.
+        private $db_host = DB_HOST;
         private $db_username = DB_USERNAME;
         private $db_password = DB_PASSWORD;
         private $db_name = DB_NAME;
         private $user_table = TABLE_WITH_USERS;
-		private $email_col = COLUMN_WITH_EMAILS;
-		private $password_col = COLUMN_WITH_PASSWORD_HASHES;
+        private $email_col = COLUMN_WITH_EMAILS;
+        private $password_col = COLUMN_WITH_PASSWORD_HASHES;
         private $activated_col = COLUMN_CONFIRMING_ACCOUNT_ACTIVATION;
-        private $emailed_hash_col = COLUMN_WITH_EMAILED_HASHES;		
+        private $emailed_hash_col = COLUMN_WITH_EMAILED_HASHES;     
         private $mysqli;
         
         //Start a database connection.
-	 	function __construct()
-		{
-			$this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name);
+        function __construct()
+        {
+            $this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name);
         }
-		
-		function create_user($email, $password, $confirm_password)
-		{
+        
+        function create_user($email, $password, $confirm_password)
+        {
             if($password == $confirm_password)
             {
                 $password = $this->encrypt_password($password);
@@ -154,7 +154,7 @@
                     
             return empty($this->mysqli->error);
         }       
-		
+        
         //Mark the account as activated.
         function account_activated($hash)
         {

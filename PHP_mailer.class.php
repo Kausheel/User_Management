@@ -485,7 +485,7 @@ class PHPMailer {
       if ($this->exceptions) {
         throw new phpmailerException('Invalid recipient array: ' . $kind);
       }
-	  if ($this->SMTPDebug) {
+      if ($this->SMTPDebug) {
         echo $this->Lang('Invalid recipient array').': '.$kind;
       }
       return false;
@@ -497,7 +497,7 @@ class PHPMailer {
       if ($this->exceptions) {
         throw new phpmailerException($this->Lang('invalid_address').': '.$address);
       }
-	  if ($this->SMTPDebug) {
+      if ($this->SMTPDebug) {
         echo $this->Lang('invalid_address').': '.$address;
       }
       return false;
@@ -531,7 +531,7 @@ class PHPMailer {
       if ($this->exceptions) {
         throw new phpmailerException($this->Lang('invalid_address').': '.$address);
       }
-	  if ($this->SMTPDebug) {
+      if ($this->SMTPDebug) {
         echo $this->Lang('invalid_address').': '.$address;
       }
       return false;
@@ -587,7 +587,7 @@ class PHPMailer {
       if(!$this->PreSend()) return false;
       return $this->PostSend();
     } catch (phpmailerException $e) {
-	  $this->SentMIMEMessage = '';
+      $this->SentMIMEMessage = '';
       $this->SetError($e->getMessage());
       if ($this->exceptions) {
         throw $e;
@@ -598,7 +598,7 @@ class PHPMailer {
 
   protected function PreSend() {
     try {
-	  $mailHeader = "";
+      $mailHeader = "";
       if ((count($this->to) + count($this->cc) + count($this->bcc)) < 1) {
         throw new phpmailerException($this->Lang('provide_address'), self::STOP_CRITICAL);
       }
@@ -619,7 +619,7 @@ class PHPMailer {
       $this->MIMEBody = $this->CreateBody();
 
       // To capture the complete message when using mail(), create
-	  // an extra header list which CreateHeader() doesn't fold in
+      // an extra header list which CreateHeader() doesn't fold in
       if ($this->Mailer == 'mail') {
         if (count($this->to) > 0) {
           $mailHeader .= $this->AddrAppend("To", $this->to);
@@ -669,7 +669,7 @@ class PHPMailer {
       if ($this->exceptions) {
         throw $e;
       }
-	  if ($this->SMTPDebug) {
+      if ($this->SMTPDebug) {
         echo $e->getMessage()."\n";
       }
       return false;
@@ -914,7 +914,7 @@ class PHPMailer {
       }
     } catch (phpmailerException $e) {
       $this->smtp->Reset();
-	  if ($this->exceptions) {
+      if ($this->exceptions) {
         throw $e;
       }
     }
@@ -1195,7 +1195,7 @@ class PHPMailer {
           $result .= $this->HeaderLine('To', 'undisclosed-recipients:;');
         }
       }
-	}
+    }
 
     $from = array();
     $from[0][0] = trim($this->From);
@@ -1533,7 +1533,7 @@ class PHPMailer {
       if ($this->exceptions) {
         throw $e;
       }
-	  if ($this->SMTPDebug) {
+      if ($this->SMTPDebug) {
         echo $e->getMessage()."\n";
       }
       if ( $e->getCode() == self::STOP_CRITICAL ) {
@@ -1638,23 +1638,23 @@ class PHPMailer {
           return false;
         }
       }
-	  $magic_quotes = get_magic_quotes_runtime();
-	  if ($magic_quotes) {
+      $magic_quotes = get_magic_quotes_runtime();
+      if ($magic_quotes) {
         if (version_compare(PHP_VERSION, '5.3.0', '<')) {
           set_magic_quotes_runtime(0);
         } else {
-		  ini_set('magic_quotes_runtime', 0); 
-		}
-	  }
+          ini_set('magic_quotes_runtime', 0); 
+        }
+      }
       $file_buffer  = file_get_contents($path);
       $file_buffer  = $this->EncodeString($file_buffer, $encoding);
-	  if ($magic_quotes) {
+      if ($magic_quotes) {
         if (version_compare(PHP_VERSION, '5.3.0', '<')) {
           set_magic_quotes_runtime($magic_quotes);
         } else {
-		  ini_set('magic_quotes_runtime', $magic_quotes); 
-	    }
-	  }
+          ini_set('magic_quotes_runtime', $magic_quotes); 
+        }
+      }
       return $file_buffer;
     } catch (Exception $e) {
       $this->SetError($e->getMessage());
@@ -2231,16 +2231,16 @@ class PHPMailer {
     }
     $this->IsHTML(true);
     $this->Body = $message;
-	if (empty($this->AltBody)) {
-		$textMsg = trim(strip_tags(preg_replace('/<(head|title|style|script)[^>]*>.*?<\/\\1>/s', '', $message)));
-		if (!empty($textMsg)) {
-			$this->AltBody = html_entity_decode($textMsg, ENT_QUOTES, $this->CharSet);
-		}
-	}
+    if (empty($this->AltBody)) {
+        $textMsg = trim(strip_tags(preg_replace('/<(head|title|style|script)[^>]*>.*?<\/\\1>/s', '', $message)));
+        if (!empty($textMsg)) {
+            $this->AltBody = html_entity_decode($textMsg, ENT_QUOTES, $this->CharSet);
+        }
+    }
     if (empty($this->AltBody)) {
       $this->AltBody = 'To view this email message, open it in a program that understands HTML!' . "\n\n";
     }
-	return $message;
+    return $message;
   }
 
   /**
