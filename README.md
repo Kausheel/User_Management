@@ -1,7 +1,7 @@
-Authentication 
-==================
-
 This whole module is in PUBLIC DOMAIN, so you can do whatever you want with it.
+
+Authentication 
+=====================
 
 A PHP class giving you all the necessary functions for authentication.
 
