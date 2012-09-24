@@ -1,7 +1,7 @@
 <?php
 
-    include('Encrypt.class.php');
-    include('PHP_mailer.class.php');
+    include('includes/Encrypt.class.php');
+    include('includes/PHP_mailer.class.php');
     include('Configuration.php');
     
     class Authenticate 
