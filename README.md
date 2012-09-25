@@ -31,7 +31,7 @@ The create_user() function inserts the user into the database, and sends an emai
 $auth->create_user($email, $password, $confirm_password);
 
 IMPORTANT: The return value of login() MUST be checked. If it's identical (===) to TRUE, login() was successful, FALSE means wrong password, and integer 2 means the user still needs to click the registration confirmation link.
-Read this PHP manual page for information about comparision operators, it's important: http://php.net/manual/en/types.comparisons.php
+Read this PHP manual page for information about comparison operators, it's important: http://php.net/manual/en/types.comparisons.php
 
 $login_result = $auth->login($email, $password);
 if($login_result === TRUE) {echo 'Login successful'}
@@ -42,19 +42,20 @@ The existing email/password confirmation is checked before a new password is set
 
 $auth->change_password($email, $password, $new_password, $confirm_new_password);
 
-Ask the user where they want the reset link emailed to. The link will contain a unique hash which corresponds to their email address in the database.  The email they type in MUST be the same as the one they used when registering. 
-Important note: when the reset_password() function is called, the existing password IS STILL VALID. I allowed this because sometimes a user asks for a password reset, but then suddenly remembers their old password, and tries to login with that.  
+When the user needs a forgotten password to be reset, as for their email address. If the supplied email is matched in the database we send that email a link. The link will contain a unique hash which corresponds to their email address in the database. IMPORTANT: This will not work if the user tries to reset their password to an email that does not exist in the database. They MUST use the email address they supplied when creating their account, else this function will return FALSE. 
+IMPORTANT: when the reset_password() function is called, the existing password IS STILL VALID. I allowed this because sometimes a user asks for a password reset, but then suddenly remembers their old password, and tries to login with that.  
 
 $auth->reset_password($email);
 
 When the account activation link OR password reset link has been sent, the URL will contain a variable called 'hash.' You should check the contents of $_GET['hash'] on the same page that you linked to the user (check the Configuration file).
+Example your_website.com/page.php?hash=unverified45893465gfiuqirekgheo5928re5try5
 The check_hash() function compares the hash in the URL with the database, and if the hash exists, it returns the type of hash i.e email validation OR a password reset.
 We check the type of hash to decide what we do next, either show a form for the user to type in a new password after a reset, OR call the account_activated() function.
 
     include('Authenticate.class.php');
     $auth = new Authenticate();
 	    
-    if(strlen($_GET['hash']) == 42)
+    if($_GET['hash'])
     {
         $hash_type = $auth->check_hash($_GET['hash']);
         if($hash_type == 'unverified')
