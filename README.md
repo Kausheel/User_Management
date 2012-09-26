@@ -14,32 +14,29 @@ API Summary:
 - delete_user($email, $password)
 - logout()
 - check_hash($hash)
-- account_activated($hash)
+- activate_account($hash)
 - set_password($email, $password)
 
 Features:
 
 - Database settings, table structure, and email/SMTP settings are independant from the code. Just set once in Configuration file.
-- Passwords are hashed with Bcrypt using the PHPass framework. 
+- Passwords are hashed with Bluefish/bcrypt using the PHPass framework. 
 - The class can generate emails using the PHPMailer library, and sends an email for account activation and forgotten passwords.
 - Users login with their email address.
 - MySQL Prepared Statements are used to protect from injection.
+- Error messages are set in the Configuration file, so you can customize the wording of various errors without going through the code. 
 
 Usage:
 
 The create_user() function inserts the user into the database, and sends an email with a confirmation link.
 
-    $auth->create_user($email, $password);
+    $auth->create_user($email, $password);  
 
-IMPORTANT: The return value of login() MUST be checked. If it's identical (===) to TRUE, login() was successful, FALSE means wrong password, and integer 2 means the user still needs to click the registration confirmation link.
-Read this PHP manual page for information about comparison operators, it's important: http://php.net/manual/en/types.comparisons.php  
+The login() function will return TRUE if the $email/$password combination is correct, and FALSE on failure.  
 
-    $login_result = $auth->login($email, $password);  
-    if($login_result === TRUE) {echo 'Login successful'}  
-    else if($login_result === 2) {echo 'Please check your email for a link to confirm your registration.'}  
-    else if($login_result === FALSE) {echo 'Your username/password combination is wrong. Try again.'}  
+    if($auth->login($email, $password) {echo 'Successful login.';}
 
-The existing email/password confirmation is checked before a new password is set, so an error is returned if the user gets their old password wrong, or the email address is not valid.  
+The existing email/password combination is checked before the password is changed, so an error is returned if the user gets their old password wrong, or the email address is not valid.  
 
     $auth->change_password($email, $old_password, $new_password);
 
@@ -66,7 +63,7 @@ We check the type of hash to decide what we do next, either show a form for the 
         $hash_type = $auth->check_hash($_GET['hash']);
         if($hash_type == 'unverified')
         {
-            if(!$auth->account_activated($_GET['hash']))
+            if(!$auth->activate_account($_GET['hash']))
             {
                 echo 'Error: The hash does not exist. <br> REDIRECT TO LOGIN PAGE.';
             }
@@ -80,7 +77,7 @@ We check the type of hash to decide what we do next, either show a form for the 
             echo 'Link to "Set New Password" page.';
         }
     }
-The account_activated() function changes the value of a boolean database column to 1, meaning the account has been activated. It also deletes the emailed_hash, so the emailed link is now dead.
+The activate_account() function changes the value of the boolean database column 'activated' to 1. It also deletes the emailed_hash column, so the emailed link is now dead.
 
 Call set_password when the user has clicked on the emailed link from reset_password(), and sees a form to type in a new password (one that they will remember this time!). This will return FALSE if the $email is not in the database.
 
