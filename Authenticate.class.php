@@ -114,11 +114,22 @@
         
         public function change_password($email, $old_password, $new_password)
         {
+            if(!($email && $old_password && $new_password))
+            {
+                echo CHANGE_PASSWORD_MISSING_PARAMETERS;
+                return FALSE;
+            }
+             
             //Validate the $email/$password combination provided. 
             if($this->login($email, $old_password))
             {
                 return $this->set_password($email, $new_password);
             }
+            else 
+            {
+                echo CHANGE_PASSWORD_WRONG_EMAIL_OR_PASSWORD;
+                return FALSE;   
+            }            
         }       
         
         //Email a password reset link embedded with a unique hash.

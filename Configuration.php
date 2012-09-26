@@ -12,7 +12,7 @@
     define('COLUMN_CONFIRMING_ACCOUNT_ACTIVATION', 'column_name');
     define('COLUMN_WITH_EMAILED_HASHES', 'column_name');
 
-    //Define email settings. Emails are sent when the user registers, and when a password is reset.
+    /*Define email settings. Emails are sent when the user registers, and when a password is reset.*/
     define('IS_SMTP', 'TRUE');
     define('SMTP_SERVERS', 'smtp1.example.com;smtp2.example.com');
     define('SMTP_AUTH', 'TRUE');
@@ -40,11 +40,13 @@
     //This is an effort to separate Logic from Presentation. 
     //If you don't want an error message to be echoed out at all, just delete the 2nd parameter of the function call to make it an empty string, but don't delete the function or constant itself. 
     //Example define('CONSTANT_NAME', ''); Don't delete the whole line, otherwise an E_NOTICE error will be thrown for attempting to call an undefined constant. 
+    //The naming convention for the CONSTANTS is to name the function first, then the error itself.
     define('DATABASE_CONNECTION_ERROR', 'Please check your MySQL connection settings in the Configuration file, and try again.');
     define('CREATE_USER_MALFORMED_EMAIL', 'The email address you entered is invalid. Please go back and try again.');
     define('CREATE_USER_MISSING_PARAMETER', 'You cannot leave the email or password fields blank');
     define('CREATE_USER_DATABASE_ERROR', 'Error inserting data. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');
     define('LOGIN_UNVERIFIED_ACCOUNT', 'Please check your email for a link to activate your account.');
     define('LOGIN_FAILED', 'Login failed. Wrong email/password combination.');
+    define('CHANGE_PASSWORD_WRONG_EMAIL_OR_PASSWORD', 'The email/password combination you entered was incorrect. Your password was not changed.');
     
 ?>
