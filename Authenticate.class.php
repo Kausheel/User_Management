@@ -88,14 +88,14 @@
             $stmt = $this->mysqli->prepare("SELECT `$this->password_col`, `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
             $stmt->bind_param('s', $email);
             $stmt->execute();
-            $stmt->bind_result($password_hash, $emailed_hash);
+            $stmt->bind_result($stored_password, $emailed_hash);
             $stmt->fetch();
               
             if(!$this->mysqli->error)
             {                        
                 //Check if the password hashes match
                 $encrypt = new Encrypt(12, FALSE);            
-                if(!$encrypt->check_password($password, $password_hash))
+                if(!$encrypt->check_password($password, $stored_password))
                 {
                     echo LOGIN_FAILED;
                     return FALSE;
