@@ -1,6 +1,7 @@
 <?php
     //Define the database/table/column structure here, to be inherited by the Authenticate class.
-    //Column for PASSWORD_HASHES must be 60 bytes, ACCOUNT_ACTIVATION 1 byte, and EMAILED_HASHES 42 bytes.
+    //Column for PASSWORD_HASHES must be 60 characters wide, ACCOUNT_ACTIVATION 1 character, and EMAILED_HASHES 42 characters.
+    //NOTE: If you do not set these values correctly, you'll receive ambiguous errors like 'Call to a member function bind_param on a non-object.'  
     define('DB_HOST', 'localhost');
     define('DB_USERNAME', 'my_username');
     define('DB_PASSWORD', 'my_password');
@@ -35,6 +36,13 @@
     define('RESET_BODY', 'To reset your password, please click the link below, and follow the steps to create a new password: <br> http://name_of_your_website.com/test.php?hash=$random_hash');
     define('RESET_ALT_BODY', 'This body will be shown when the email client does not support HTML');
     
-    //Define the error messages echoed to the browser for each circumstance. The reason we define them here is so that 
-    define('CREATE_USER_BAD_EMAIL', 'The email address you entered is invalid. Please go back and try again.');
+    //Define the error messages echoed to the browser for each circumstance. We define them here so that the wording of error messages can be easily modified, without having to edit the actual code.
+    //This is an effort to separate Logic from Presentation. 
+    //If you don't want an error message to be echoed out at all, just delete the 2nd parameter of the function call to make it an empty string, but don't delete the function or constant itself. 
+    //Example define('CONSTANT_NAME', ''); Don't delete the whole line, otherwise an E_NOTICE error will be thrown for attempting to call an undefined constant. 
+    define('DATABASE_CONNECTION_ERROR', 'Please check your MySQL connection settings in the Configuration file, and try again.');
+    define('CREATE_USER_MALFORMED_EMAIL', 'The email address you entered is invalid. Please go back and try again.');
+    define('CREATE_USER_MISSING_PARAMETER', 'You cannot leave the email or password fields blank');
+    define('CREATE_USER_DATABASE_ERROR', 'There was an error inserting the data into the database. Ensure your Configuration file suits your database schema.');
+    
 ?>
