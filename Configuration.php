@@ -39,7 +39,9 @@
     //This is an effort to separate Logic from Presentation. 
     //If you don't want an error message to be echoed out at all, just delete the 2nd parameter of the function call to make it an empty string, but don't delete the function or constant itself. 
     //Example define('CONSTANT_NAME', ''); Don't delete the whole line, otherwise an E_NOTICE error will be thrown for attempting to call an undefined constant. 
+    define('DATABASE_CONNECTION_ERROR', 'Please check your MySQL connection settings in the Configuration file, and try again.');
     define('CREATE_USER_MALFORMED_EMAIL', 'The email address you entered is invalid. Please go back and try again.');
     define('CREATE_USER_MISSING_PARAMETER', 'You cannot leave the email or password fields blank');
     define('CREATE_USER_DATABASE_ERROR', 'There was an error inserting the data into the database. Ensure your Configuration file suits your database schema.');
+    
 ?>
