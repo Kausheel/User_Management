@@ -18,6 +18,9 @@
         private $emailed_hash_col = COLUMN_WITH_EMAILED_HASHES;     
         private $mysqli;
         
+        //Note, there are many more constants inherited from the Configuration file, containing various error messages to be outputted from this class. 
+        //We store them externally so they are easily editable without having to go through this code, separating Logic from Presentation.
+        
         //Start a database connection.
         function __construct()
         {
