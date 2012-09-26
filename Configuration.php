@@ -46,5 +46,6 @@
     define('CREATE_USER_DATABASE_ERROR', 'Error inserting data. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');
     define('LOGIN_MISSING_PARAMETER', 'Login failed. Wrong email/password combination');
     define('LOGIN_UNVERIFIED_ACCOUNT', 'Please check your email for a link to activate your account.');
+    define('LOGIN_FAILED', 'Login failed. Wrong email/password combination.');
     
 ?>

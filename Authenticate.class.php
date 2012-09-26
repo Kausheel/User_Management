@@ -92,17 +92,23 @@
             $stmt->fetch();
               
             if(!$this->mysqli->error)
-            {  
+            {                        
+                //Check if the password hashes match
+                $encrypt = new Encrypt(12, FALSE);            
+                if(!$encrypt->check_password($password, $password_hash))
+                {
+                    echo LOGIN_FAILED;
+                    return FALSE;
+                }
+                
                 //Use the $emailed_hash to check if the account has been verified by email.
                 if(strpos($emailed_hash, 'unverified') !== FALSE)
                 {
                     echo LOGIN_UNVERIFIED_ACCOUNT;
                     return FALSE;
                 }
-                                                
-                //Check if the password hashes match
-                $encrypt = new Encrypt(12, FALSE);            
-                return $encrypt->check_password($password, $password_hash);      
+                
+                return TRUE;      
             }    
         }   
         
