@@ -78,7 +78,13 @@
         
         public function login($email, $password) 
         {
-            //Fetch password and emailed_hash from database, to check if the account has been activated.
+            if(!($email && $password))
+            {
+                echo LOGIN_MISSING_PARAMETER;
+                return FALSE;
+            }
+            
+            //Fetch the password and emailed_hash from database by matching the email. If there is no result, the $email does not exist.
             $stmt = $this->mysqli->prepare("SELECT `$this->password_col`, `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
             $stmt->bind_param('s', $email);
             $stmt->execute();
@@ -87,10 +93,11 @@
               
             if(!$this->mysqli->error)
             {  
-                //Check if the account has been verified.
+                //Use the $emailed_hash to check if the account has been verified by email.
                 if(strpos($emailed_hash, 'unverified') !== FALSE)
                 {
-                    return 2;
+                    echo LOGIN_UNVERIFIED_ACCOUNT;
+                    return FALSE;
                 }
                                                 
                 //Check if the password hashes match

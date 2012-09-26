@@ -43,6 +43,8 @@
     define('DATABASE_CONNECTION_ERROR', 'Please check your MySQL connection settings in the Configuration file, and try again.');
     define('CREATE_USER_MALFORMED_EMAIL', 'The email address you entered is invalid. Please go back and try again.');
     define('CREATE_USER_MISSING_PARAMETER', 'You cannot leave the email or password fields blank');
-    define('CREATE_USER_DATABASE_ERROR', 'There was an error inserting the data into the database. Ensure your Configuration file suits your database schema.');
+    define('CREATE_USER_DATABASE_ERROR', 'Error inserting data. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');
+    define('LOGIN_MISSING_PARAMETER', 'Login failed. Wrong email/password combination');
+    define('LOGIN_UNVERIFIED_ACCOUNT', 'Please check your email for a link to activate your account.');
     
 ?>
