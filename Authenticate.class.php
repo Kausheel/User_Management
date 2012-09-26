@@ -18,7 +18,7 @@
         private $emailed_hash_col = COLUMN_WITH_EMAILED_HASHES;     
         private $mysqli;
         
-        //Note, there are many more constants inherited from the Configuration file, containing various error messages to be outputted from this class. 
+        //NOTE, there are many more CONSTANTS inherited from the Configuration file, containing various error messages to be outputted from this class. 
         //We store them externally so they are easily editable without having to go through this code, separating Logic from Presentation.
         
         //Start a database connection.
@@ -29,6 +29,12 @@
         
         function create_user($email, $password)
         {
+            if(!($email || $password))
+            {
+                echo CREATE_USER_MISSING_PARAMETER;
+                return FALSE;
+            }
+            
             $password = $this->encrypt_password($password);
               
             //Generate the random hash to be sent in the email confirmation link.
@@ -41,7 +47,7 @@
             //Send the email.
             if(!$mail->Send())
             {
-                echo CREATE_USER_BAD_EMAIL;
+                echo CREATE_USER_MALFORMED_EMAIL;
                 return FALSE;
             }
                 
@@ -49,7 +55,7 @@
             $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`, `$this->emailed_hash_col`) VALUES(?, ?, ?)");   
             $stmt->bind_param('sss', $email, $password, $random_hash);
             $stmt->execute();
-               
+            
             return empty($this->mysqli->error);                                
         }
         
