@@ -29,7 +29,7 @@
         
         function create_user($email, $password)
         {
-            if(!($email || $password))
+            if(!($email && $password))
             {
                 echo CREATE_USER_MISSING_PARAMETER;
                 return FALSE;
@@ -56,7 +56,15 @@
             $stmt->bind_param('sss', $email, $password, $random_hash);
             $stmt->execute();
             
-            return empty($this->mysqli->error);                                
+            if(!$this->mysqli->error)
+            {
+                return TRUE;
+            }
+            else
+            {
+                echo CREATE_USER_DATABASE_ERROR;
+                return FALSE;   
+            }        
         }
         
         function login($email, $password) 
