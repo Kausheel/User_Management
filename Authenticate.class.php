@@ -24,32 +24,29 @@
             $this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name);
         }
         
-        function create_user($email, $password, $confirm_password)
+        function create_user($email, $password)
         {
-            if($password == $confirm_password)
-            {
-                $password = $this->encrypt_password($password);
-                
-                //Generate the random hash to be sent in the email confirmation link.
-                $random_hash = $this->generate_random_hash();      
-                $random_hash = 'unverified'.$random_hash;
+            $password = $this->encrypt_password($password);
+              
+            //Generate the random hash to be sent in the email confirmation link.
+            $random_hash = $this->generate_random_hash();      
+            $random_hash = 'unverified'.$random_hash;
                     
-                //Generate the email.
-                $mail = $this->generate_email($email, 'registration', $random_hash);
+            //Generate the email.
+            $mail = $this->generate_email($email, 'registration', $random_hash);
                 
-                //Send the email.
-                if(!$mail->Send())
-                {
-                    return FALSE;
-                }
+            //Send the email.
+            if(!$mail->Send())
+            {
+                return FALSE;
+            }
                 
-                //Add the email, password, and random hash to the database.
-                $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`, `$this->emailed_hash_col`) VALUES(?, ?, ?)");   
-                $stmt->bind_param('sss', $email, $password, $random_hash);
-                $stmt->execute();
-                
-                return empty($this->mysqli->error);
-            }                                
+            //Add the email, password, and random hash to the database.
+            $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`, `$this->emailed_hash_col`) VALUES(?, ?, ?)");   
+            $stmt->bind_param('sss', $email, $password, $random_hash);
+            $stmt->execute();
+               
+            return empty($this->mysqli->error);                                
         }
         
         function login($email, $password) 
