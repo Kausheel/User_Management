@@ -34,4 +34,7 @@
     define('RESET_SUBJECT', 'You have reset your password');
     define('RESET_BODY', 'To reset your password, please click the link below, and follow the steps to create a new password: <br> http://name_of_your_website.com/test.php?hash=$random_hash');
     define('RESET_ALT_BODY', 'This body will be shown when the email client does not support HTML');
+    
+    //Define the error messages echoed to the browser for each circumstance. The reason we define them here is so that 
+    define('CREATE_USER_BAD_EMAIL', 'The email address you entered is invalid. Please go back and try again.');
 ?>

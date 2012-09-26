@@ -38,6 +38,7 @@
             //Send the email.
             if(!$mail->Send())
             {
+                echo CREATE_USER_BAD_EMAIL;
                 return FALSE;
             }
                 
