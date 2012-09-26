@@ -68,6 +68,10 @@
             else
             {
                 echo CREATE_USER_MALFORMED_EMAIL;
+                
+                //Rollback the database insertion.
+                $this->delete_user($email, $password);
+                
                 return FALSE;
             }        
         }
