@@ -207,8 +207,7 @@
             return empty($this->mysqli->error);
         }       
         
-        //Mark the account as activated.
-        public function account_activated($hash)
+        public function activate_account($hash)
         {
             //We replace the emailed_hash_col with an empty value.
             $blank = '';          
