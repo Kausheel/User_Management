@@ -75,15 +75,12 @@
             }    
         }   
         
-        function change_password($email, $password, $new_password, $confirm_new_password)
+        function change_password($email, $old_password, $new_password)
         {
-            if($new_password == $confirm_new_password)
+            //Test the user's credentials first. 
+            if($this->login($email, $old_password))
             {
-                //Test the user's credentials. 
-                if($this->login($email, $password))
-                {
-                    return $this->set_password($email, $new_password);
-                }
+                return $this->set_password($email, $new_password);
             }
         }       
         
