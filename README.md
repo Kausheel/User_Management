@@ -38,7 +38,7 @@ Read this PHP manual page for information about comparison operators, it's impor
     else if($login_result === 2) {echo 'Please check your email for a link to confirm your registration.'}  
     else if($login_result === FALSE) {echo 'Your username/password combination is wrong. Try again.'}  
 
-The existing email/password confirmation is checked before a new password is set, so an error is returned if the user gets their old password, or the email address is not valid.  
+The existing email/password confirmation is checked before a new password is set, so an error is returned if the user gets their old password wrong, or the email address is not valid.  
 
     $auth->change_password($email, $old_password, $new_password);
 
