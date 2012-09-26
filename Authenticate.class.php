@@ -80,7 +80,7 @@
         {
             if(!($email && $password))
             {
-                echo LOGIN_MISSING_PARAMETER;
+                echo LOGIN_FAILED; 
                 return FALSE;
             }
             
