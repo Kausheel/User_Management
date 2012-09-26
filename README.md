@@ -31,14 +31,14 @@ The create_user() function inserts the user into the database, and sends an emai
 $auth->create_user($email, $password);
 
 IMPORTANT: The return value of login() MUST be checked. If it's identical (===) to TRUE, login() was successful, FALSE means wrong password, and integer 2 means the user still needs to click the registration confirmation link.
-Read this PHP manual page for information about comparison operators, it's important: http://php.net/manual/en/types.comparisons.php
+Read this PHP manual page for information about comparison operators, it's important: http://php.net/manual/en/types.comparisons.php  
 
-$login_result = $auth->login($email, $password);
-if($login_result === TRUE) {echo 'Login successful'}
-else if($login_result === 2) {echo 'Please check your email for a link to confirm your registration.'}
-else if($login_result === FALSE) {echo 'Your username/password combination is wrong. Try again.'}
+$login_result = $auth->login($email, $password);  
+if($login_result === TRUE) {echo 'Login successful'}  
+else if($login_result === 2) {echo 'Please check your email for a link to confirm your registration.'}  
+else if($login_result === FALSE) {echo 'Your username/password combination is wrong. Try again.'}  
 
-The existing email/password confirmation is checked before a new password is set, so an error is returned if the user gets their old password, or the email address is not valid.
+The existing email/password confirmation is checked before a new password is set, so an error is returned if the user gets their old password, or the email address is not valid.  
 
 $auth->change_password($email, $old_password, $new_password);
 
