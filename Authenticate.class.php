@@ -22,7 +22,7 @@
         //We store them externally so they are easily editable without having to go through this code, separating Logic from Presentation.
         
         //Start a database connection.
-        function __construct()
+        public function __construct()
         {
             $this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name);
             
@@ -32,7 +32,7 @@
             }            
         }
         
-        function create_user($email, $password)
+        public function create_user($email, $password)
         {
             if(!($email && $password))
             {
@@ -76,7 +76,7 @@
             }        
         }
         
-        function login($email, $password) 
+        public function login($email, $password) 
         {
             //Fetch password and emailed_hash from database, to check if the account has been activated.
             $stmt = $this->mysqli->prepare("SELECT `$this->password_col`, `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
@@ -99,7 +99,7 @@
             }    
         }   
         
-        function change_password($email, $old_password, $new_password)
+        public function change_password($email, $old_password, $new_password)
         {
             //Validate the $email/$password combination provided. 
             if($this->login($email, $old_password))
@@ -109,7 +109,7 @@
         }       
         
         //Email a password reset link embedded with a unique hash.
-        function reset_password($email)
+        public function reset_password($email)
         {
             $random_hash = $this->generate_random_hash();
             
@@ -137,7 +137,7 @@
             return TRUE;
         }
         
-        function delete_user($email, $password)
+        public function delete_user($email, $password)
         {
             //Validate the $email/$password combination provided.
             if($this->login($email, $password))
@@ -151,7 +151,7 @@
         }
         
         //When the GET variable is found in the URL, a user has either clicked a password reset link, OR an email validation link. This function will check the hash and return the type. 
-        function check_hash($hash)
+        public function check_hash($hash)
         {
             //Attempt to find the URL hash in the database. If it exists, bind_result($result) should contain exactly what we searched for. If not, the hash doesn't exist.
             //A non-existent hash means the user must've malformed the hash in the URL manually.
@@ -175,14 +175,14 @@
             }                 
         }
         
-        function logout() 
+        public function logout() 
         {
             session_start();
             $_SESSION = array();
             return session_destroy();  
         }
         
-        function set_password($email, $password)
+        public function set_password($email, $password)
         {
             $password = $this->encrypt_password($password);
                
@@ -195,7 +195,7 @@
         }       
         
         //Mark the account as activated.
-        function account_activated($hash)
+        public function account_activated($hash)
         {
             //We replace the emailed_hash_col with an empty value.
             $blank = '';          
