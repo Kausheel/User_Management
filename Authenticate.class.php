@@ -45,30 +45,30 @@
             //Generate the random hash to be sent in the email confirmation link.
             $random_hash = $this->generate_random_hash();      
             $random_hash = 'unverified'.$random_hash;
-                    
-            //Generate the email.
-            $mail = $this->generate_email($email, 'registration', $random_hash);
-                
-            //Send the email.
-            if(!$mail->Send())
-            {
-                echo CREATE_USER_MALFORMED_EMAIL;
-                return FALSE;
-            }
-                
+                       
             //Add the email, password, and random hash to the database.
             $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`, `$this->emailed_hash_col`) VALUES(?, ?, ?)");   
             $stmt->bind_param('sss', $email, $password, $random_hash);
             $stmt->execute();
             
-            if(!$this->mysqli->error)
+            if($this->mysqli->error)
+            {
+                echo CREATE_USER_DATABASE_ERROR;
+                return FALSE;   
+            }
+            
+            //Generate the email.
+            $mail = $this->generate_email($email, 'registration', $random_hash);
+                
+            //Send the email.
+            if($mail->Send())
             {
                 return TRUE;
             }
             else
             {
-                echo CREATE_USER_DATABASE_ERROR;
-                return FALSE;   
+                echo CREATE_USER_MALFORMED_EMAIL;
+                return FALSE;
             }        
         }
         
