@@ -11,6 +11,7 @@ API Summary:
 - login($email, $password)
 - change_password($email, $old_password, $new_password)
 - reset_password($email)
+- delete_user($email, $password)
 - logout()
 - check_hash($hash)
 - account_activated($hash)
@@ -46,6 +47,10 @@ When the user needs a forgotten password to be reset, ask for their email addres
 IMPORTANT: when the reset_password() function is called, the existing password IS STILL VALID. I allowed this because sometimes a user asks for a password reset, but then suddenly remembers their old password, and tries to login with that.  
 
     $auth->reset_password($email);
+    
+Call delete_user() to delete the row from the database. The correct $email/$password combination for the user must be given for the function to return TRUE.
+
+    $auth->delete_user($email, $password);
 
 When the account activation link OR password reset link has been sent, the URL will contain a variable called 'hash.' Example your_website.com/page.php?hash=unverified45893465gfiuqirekgheo5928re5try5
 You should check the contents of $_GET['hash'] on the same page that you linked to the user (check the Configuration file).
