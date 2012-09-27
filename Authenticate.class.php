@@ -135,6 +135,12 @@
         //Email a password reset link embedded with a unique hash.
         public function reset_password($email)
         {
+            if(!$email)
+            {
+                echo RESET_PASSWORD_MISSING_PARAMETER;
+                return FALSE;
+            }
+            
             $random_hash = $this->generate_random_hash();
             
             //The 'reset' flag will be checked when the password reset link is clicked, to make sure the user did actually request a password reset.
