@@ -162,6 +162,7 @@
                 
             if(!$mail->Send())
             {
+                echo RESET_PASSWORD_MALFORMED_EMAIL;
                 return FALSE;
             }              
             
