@@ -49,5 +49,6 @@
     define('LOGIN_FAILED', 'Login failed. Wrong email/password combination.');
     define('CHANGE_PASSWORD_WRONG_EMAIL_OR_PASSWORD', 'The email/password combination you entered was incorrect. Your password was not changed.');
     define('CHANGE_PASSWORD_MISSING_PARAMETERS', 'You must fill in all fields. Your password was not changed.');
-    define('RESET_PASSWORD_MISSING_PARAMETER', 'Please enter your email address to reset your password');    
+    define('RESET_PASSWORD_MISSING_PARAMETER', 'Please enter your email address to reset your password');
+    define('RESET_PASSWORD_DATABASE_ERROR', 'Error inserting data. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');    
 ?>

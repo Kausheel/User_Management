@@ -153,6 +153,7 @@
 
             if($this->mysqli->error)
             {
+                echo RESET_PASSWORD_DATABASE_ERROR;
                 return FALSE;
             }
             
