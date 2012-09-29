@@ -163,6 +163,10 @@
             if(!$mail->Send())
             {
                 echo RESET_PASSWORD_MALFORMED_EMAIL;
+                
+                //Rollback changes to database.
+                $this->mysqli->query("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = '' WHERE `$this->emailed_hash_col` = '$random_hash'");
+                
                 return FALSE;
             }              
             
