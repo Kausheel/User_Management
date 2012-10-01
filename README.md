@@ -28,7 +28,8 @@ Features:
 
 Usage:
 
-The create_user() function inserts the user into the database, and sends an email with a confirmation link.
+The create_user() function inserts the user into the database, and sends an email with a confirmation link.  
+It is the developer's responsibility to have another password field, called confirm_password field, and check it with the 1st password field before create_user() is called. 
 
     $auth->create_user($email, $password);  
 
