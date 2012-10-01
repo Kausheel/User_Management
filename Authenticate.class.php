@@ -228,6 +228,12 @@
         
         public function set_password($email, $password)
         {
+            if(!($email && $password))
+            {
+                echo SET_PASSWORD_MISSING_PARAMETERS;    
+                return FALSE;
+            }             
+                
             $password = $this->encrypt_password($password);
                
             //Insert the password, and delete the emailed_hash column since we want it to be empty when we are not awaiting an email link to be clicked.
@@ -235,7 +241,15 @@
             $stmt->bind_param('ss', $password, $email);
             $stmt->execute();
                     
-            return empty($this->mysqli->error);
+            if(!$this->mysqli->error)
+            {
+                return TRUE;
+            }
+            else
+            {
+                echo SET_PASSWORD_DATABASE_ERROR;
+                return FALSE;
+            }
         }       
         
         public function activate_account($hash)
