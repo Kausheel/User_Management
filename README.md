@@ -55,7 +55,7 @@ Call delete_user() to delete the row from the database. The correct $email/$pass
 When the account activation link OR password reset link has been sent, the URL will contain a variable called 'hash.' Example your_website.com/page.php?hash=reset5893465gfiuqirekgheo5928re5try5
 You should check the contents of $_GET['hash'] on the same page that you linked to the user (check the Configuration file).
 
-The check_hash_type() function compares the hash in the URL with the database, and if the hash exists, it returns the type of hash i.e account_activation OR a password reset.
+The check_hash_type() function compares the hash in the URL with the database, and if the hash exists, it returns the type of hash i.e account activation OR a password reset.
 We check the type of hash to decide what we do next, either show a form for the user to type in a new password after a reset, OR call activate_account().
 
     include('Authenticate.class.php');
@@ -82,7 +82,9 @@ We check the type of hash to decide what we do next, either show a form for the 
     }
 The activate_account() function changes the value of the boolean database column 'activated' to 1. It also deletes the emailed_hash column, so the emailed link is now dead.
 
-Call set_password() when the user has clicked on the emailed link from reset_password(), and sees a form to type in a new password (one that they will remember this time!). This will return FALSE if the $email is not in the database.
+Call set_password() when the user has clicked on the emailed link from reset_password(), and check_hash_type() has been called to determine that the user has indeed requested a password reset, and they have now been redirected
+ to a form to set their new password (one that they will remember this time!). From this form we call set_password(). 
+This will return FALSE if the $email is not in the database.
 
     $auth->set_password($email, $new_password);
 
