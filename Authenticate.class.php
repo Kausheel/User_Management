@@ -129,7 +129,7 @@
             }
             else 
             {
-                echo CHANGE_PASSWORD_WRONG_EMAIL_OR_PASSWORD;
+                echo CHANGE_PASSWORD_WRONG_PASSWORD;
                 return FALSE;   
             }            
         }       
