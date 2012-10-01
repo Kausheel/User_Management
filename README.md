@@ -13,7 +13,7 @@ API Summary:
 - reset_password($email)
 - delete_user($email, $password)
 - logout()
-- check_hash($hash)
+- check_hash_type($hash)
 - activate_account($hash)
 - set_password($email, $password)
 
