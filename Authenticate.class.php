@@ -353,9 +353,14 @@
             }
             
             //Replace the $random_hash placeholder in the Body's URL with the actual hash.
-            $mail->Body = str_replace('$random_hash', $random_hash, $mail->Body);
-            $mail->AltBody = str_replace('$random_hash', $random_hash, $mail->AltBody);
+            $mail->Body = str_replace('$random_hash', $random_hash, $mail->Body, $counter_one);
+            $mail->AltBody = str_replace('$random_hash', $random_hash, $mail->AltBody, $counter_two);
             
+            if(($counter_one + $counter_two) != 2)
+            {
+                echo GENERATE_EMAIL_MISSING_VARIABLE;
+            }
+                        
             return $mail;
         }
     }

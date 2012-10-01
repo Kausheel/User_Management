@@ -27,11 +27,13 @@
     define('IS_HTML', 'TRUE');
     
     //Define the subject and body when an email is sent to confirm registration. The $random_hash embedded in the URL will be str_replaced in the create_user() function.
+    //Do NOT modify/remove the $random_hash variable, or else an error will be displayed.
     define('REGISTRATION_SUBJECT', 'Thank you for registering!'); 
     define('REGISTRATION_BODY', 'Please click the link below to activate your account: <br> http://name_of_your_website.com/test.php?hash=$random_hash');
     define('REGISTRATION_ALT_BODY', 'This body will be shown when the email client does not support HTML');
     
-    //Define the subject and body when a user resets their password. THe $random_hash embedded in the URL will be str_replaced in the reset_password() function.
+    //Define the subject and body when a user resets their password. The $random_hash embedded in the URL will be str_replaced in the reset_password() function. 
+    //Do NOT modify/remove the $random_hash variable, or else an error will be displayed.
     define('RESET_SUBJECT', 'You have reset your password');
     define('RESET_BODY', 'To reset your password, please click the link below, and follow the steps to create a new password: <br> http://name_of_your_website.com/test.php?hash=$random_hash');
     define('RESET_ALT_BODY', 'This body will be shown when the email client does not support HTML');
@@ -57,4 +59,5 @@
     define('SET_PASSWORD_DATABASE_ERROR', 'Error inserting data. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');
     define('ACTIVATE_ACCOUNT_MISSING_PARAMETER', 'No hash found.');
     define('ACTIVATE_ACCOUNT_DATABASE_ERROR', 'Error inserting data. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');
+    define('GENERATE_EMAIL_MISSING_VARIABLE', 'You have accidentally replaced or renamed the $random_hash variable in the email body section of the Configuration file. It MUST exist somewhere in the email body.');
 ?>
