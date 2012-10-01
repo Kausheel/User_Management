@@ -178,14 +178,16 @@
         public function delete_user($email, $password)
         {
             //Validate the $email/$password combination provided.
-            if($this->login($email, $password))
+            if(!$this->login($email, $password))
             {
-                $stmt = $this->mysqli->prepare("DELETE FROM `$this->user_table` WHERE `$this->email_col` = ?");
-                $stmt->bind_param('s', $email);
-                $stmt->execute();
-                
-                return empty($this->mysqli->error);
+                return FALSE;
             }
+            
+            $stmt = $this->mysqli->prepare("DELETE FROM `$this->user_table` WHERE `$this->email_col` = ?");
+            $stmt->bind_param('s', $email);
+            $stmt->execute();
+                
+            return TRUE;
         }
         
         //When the GET variable is found in the URL, a user has either clicked a password reset link, OR an email validation link. This function will check the hash and return the type. 
