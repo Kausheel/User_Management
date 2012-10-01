@@ -1,6 +1,6 @@
 <?php
     //Define the database/table/column structure here, to be inherited by the Authenticate class.
-    //Column for PASSWORD_HASHES must be 60 characters wide, ACCOUNT_ACTIVATION 1 character, and EMAILED_HASHES 42 characters.
+    //Column for PASSWORD_HASHES must be 60 characters wide, ACCOUNT_ACTIVATION 1 character, and EMAILED_HASHES 37 characters.
     //NOTE: If you do not set these values correctly, you'll receive ambiguous errors like 'Call to a member function bind_param on a non-object.'  
     define('DB_HOST', 'localhost');
     define('DB_USERNAME', 'my_username');
