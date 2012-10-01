@@ -40,7 +40,8 @@ The existing email/password combination is checked before the password is change
 
     $auth->change_password($email, $old_password, $new_password);
 
-When the user needs a forgotten password to be reset, ask for their email address. If the supplied email is matched in the database we send that email a link. The link will contain a unique hash which corresponds to their email address in the database. IMPORTANT: This will not work if the user tries to reset their password to an email that does not exist in the database. They MUST use the email address they supplied when creating their account, else this function will return FALSE. 
+When the user needs a forgotten password to be reset, ask for their email address. If the supplied email is matched in the database we send that email a link. The link will contain a unique hash which corresponds to their email address in the database.   
+IMPORTANT: This will not work if the user tries to reset their password to an email that does not exist in the database. They MUST use the email address they supplied when creating their account, else this function will return FALSE.  
 IMPORTANT: when the reset_password() function is called, the existing password IS STILL VALID. I allowed this because sometimes a user asks for a password reset, but then suddenly remembers their old password, and tries to login with that.  
 
     $auth->reset_password($email);
