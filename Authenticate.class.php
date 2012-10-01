@@ -260,15 +260,20 @@
                 return FALSE;
             }
             
-            //We replace the emailed_hash_col with an empty value.
-            $blank = '';          
-            
             //Update the 'Activated' field to TRUE, and delete the emailed_hash_column.
             $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->activated_col` = '1', `$this->emailed_hash_col` = ? WHERE `$this->emailed_hash_col` = ?");
-            $stmt->bind_param('ss', $blank, $hash);
+            $stmt->bind_param('ss', '', $hash);
             $stmt->execute();
               
-            return empty($this->mysqli->error);
+            if(!$this->mysqli->error)
+            {
+                return TRUE;
+            }
+            else
+            {
+                echo ACTIVATE_ACCOUNT_DATABASE_ERROR;
+                return FALSE;
+            }
         }
         
         private function encrypt_password($password)

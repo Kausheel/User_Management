@@ -56,4 +56,5 @@
     define('SET_PASSWORD_MISSING_PARAMETERS', 'You left a field blank! Please go back and try again.');
     define('SET_PASSWORD_DATABASE_ERROR', 'Error inserting data. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');
     define('ACTIVATE_ACCOUNT_MISSING_PARAMETER', 'No hash found.');
+    define('ACTIVATE_ACCOUNT_DATABASE_ERROR', 'Error inserting data. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');
 ?>
