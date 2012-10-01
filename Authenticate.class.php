@@ -101,7 +101,7 @@
                 }
                 
                 //Check that the account has been activated through the emailed link.
-                if($activated == 0)
+                if($activated === 0)
                 {
                     echo LOGIN_UNVERIFIED_ACCOUNT;
                     return FALSE;
