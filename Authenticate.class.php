@@ -42,7 +42,7 @@
             
             $password = $this->encrypt_password($password);
               
-            //Generate the random hash to be sent in the email confirmation link.
+            //To be sent in the email confirmation link.
             $random_hash = $this->generate_random_hash();      
             $random_hash = 'unverified'.$random_hash;
                        
