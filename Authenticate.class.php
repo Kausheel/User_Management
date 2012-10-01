@@ -44,11 +44,10 @@
               
             //To be sent in the email confirmation link.
             $random_hash = $this->generate_random_hash();      
-            $random_hash = 'unverified'.$random_hash;
                        
-            //Add the email, password, and random hash to the database.
-            $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`, `$this->emailed_hash_col`) VALUES(?, ?, ?)");   
-            $stmt->bind_param('sss', $email, $password, $random_hash);
+            //Add the email, password, and random hash to the database. The $activated_col should be 0 by default, and 1 once the emailed link is clicked.
+            $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`, `$this->emailed_hash_col`, `$this->activated_col`) VALUES(?, ?, ?, ?)");   
+            $stmt->bind_param('sssi', $email, $password, $random_hash, 0);
             $stmt->execute();
             
             if($this->mysqli->error)
@@ -85,10 +84,10 @@
             }
             
             //Fetch the password and emailed_hash from database by matching the email. If there is no result, the $email does not exist.
-            $stmt = $this->mysqli->prepare("SELECT `$this->password_col`, `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
+            $stmt = $this->mysqli->prepare("SELECT `$this->password_col`, `$this->emailed_hash_col`, `$this->activated_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
             $stmt->bind_param('s', $email);
             $stmt->execute();
-            $stmt->bind_result($stored_password, $emailed_hash);
+            $stmt->bind_result($stored_password, $emailed_hash, $activated);
             $stmt->fetch();
               
             if(!$this->mysqli->error)
@@ -101,8 +100,8 @@
                     return FALSE;
                 }
                 
-                //Use the $emailed_hash to check if the account has been verified by email.
-                if(strpos($emailed_hash, 'unverified') !== FALSE)
+                //Check that the account has been activated through the emailed link.
+                if($activated == 0)
                 {
                     echo LOGIN_UNVERIFIED_ACCOUNT;
                     return FALSE;
@@ -187,27 +186,29 @@
         }
         
         //When the GET variable is found in the URL, a user has either clicked a password reset link, OR an email validation link. This function will check the hash and return the type. 
-        public function check_hash($hash)
+        public function check_hash_type($hash)
         {
-            //Attempt to find the URL hash in the database. If it exists, bind_result($result) should contain exactly what we searched for. If not, the hash doesn't exist.
+            //Attempt to find the URL hash in the database. If it exists, bind_result($stored_hash) should be identical to the parameter $hash. If not, the hash doesn't exist, so return FALSE.
             //A non-existent hash means the user must've malformed the hash in the URL manually.
-            $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->emailed_hash_col` = ?");
+            $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col`, `$this->activated_col` FROM `$this->user_table` WHERE `$this->emailed_hash_col` = ?");
             $stmt->bind_param('s', $hash);
             $stmt->execute();
-            $stmt->bind_result($result);
+            $stmt->bind_result($stored_hash, $activated);
             $stmt->fetch();
-            
-            if($hash === $result)
+                    
+            if($hash != $stored_hash)
             {
-                //The suffix of the hash is now checked. 'reset' means the user asked for a password reset, and 'unverified' means the account was just created.
-                if(strpos($hash, 'reset') !== FALSE)
-                {
-                    return 'reset';
-                }
-                elseif(strpos($hash, 'unverified') !== FALSE)
-                {
-                    return 'unverified';
-                }  
+                return FALSE;
+            }
+                
+            //If the $activated_col === 0, then user must've clicked an account activation link.
+            if($activated === 0)
+            {
+                return 'unverified';
+            }
+            elseif(strpos($hash, 'reset') !== FALSE) 
+            {
+                return 'reset';   
             }                 
         }
         
