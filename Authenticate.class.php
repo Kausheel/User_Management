@@ -94,23 +94,24 @@
             {
                 echo LOGIN_DATABASE_ERROR;
                 return FALSE;
-            }                        
-                //Check if the password hashes match
-                $encrypt = new Encrypt(12, FALSE);            
-                if(!$encrypt->check_password($password, $stored_password))
-                {
-                    echo LOGIN_FAILED;
-                    return FALSE;
-                }
-                
-                //Check that the account has been activated through the emailed link.
-                if($activated === 0)
-                {
-                    echo LOGIN_UNVERIFIED_ACCOUNT;
-                    return FALSE;
-                }
-                
-                return TRUE;             
+            }      
+                              
+            //Check if the password hashes match
+            $encrypt = new Encrypt(12, FALSE);            
+            if(!$encrypt->check_password($password, $stored_password))
+            {
+                echo LOGIN_FAILED;
+                return FALSE;
+            }
+              
+            //Check that the account has been activated through the emailed link.
+            if($activated === 0)
+            {
+                echo LOGIN_UNVERIFIED_ACCOUNT;
+                return FALSE;
+            }
+           
+            return TRUE;             
         }   
         
         public function change_password($email, $old_password, $new_password)
