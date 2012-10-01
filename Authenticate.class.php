@@ -90,8 +90,11 @@
             $stmt->bind_result($stored_password, $emailed_hash, $activated);
             $stmt->fetch();
               
-            if(!$this->mysqli->error)
-            {                        
+            if($this->mysqli->error)
+            {
+                echo LOGIN_DATABASE_ERROR;
+                return FALSE;
+            }                        
                 //Check if the password hashes match
                 $encrypt = new Encrypt(12, FALSE);            
                 if(!$encrypt->check_password($password, $stored_password))
@@ -107,8 +110,7 @@
                     return FALSE;
                 }
                 
-                return TRUE;      
-            }    
+                return TRUE;             
         }   
         
         public function change_password($email, $old_password, $new_password)
