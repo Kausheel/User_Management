@@ -254,6 +254,12 @@
         
         public function activate_account($hash)
         {
+            if(!$hash)
+            {
+                echo ACTIVATE_ACCOUNT_MISSING_PARAMETER;
+                return FALSE;
+            }
+            
             //We replace the emailed_hash_col with an empty value.
             $blank = '';          
             
