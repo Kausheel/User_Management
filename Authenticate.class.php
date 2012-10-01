@@ -221,7 +221,9 @@
         {
             session_start();
             $_SESSION = array();
-            return session_destroy();  
+            session_destroy();
+            
+            return TRUE;  
         }
         
         public function set_password($email, $password)
