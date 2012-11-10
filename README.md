@@ -1,5 +1,3 @@
-This whole module is in PUBLIC DOMAIN, so you can do whatever you want with it as there are no license restrictions.
-
 Authentication 
 =====================
 
