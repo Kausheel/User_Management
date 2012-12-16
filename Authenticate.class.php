@@ -1,7 +1,7 @@
 <?php
 
     include('includes/Encrypt.class.php');
-    include('includes/PHP_mailer.class.php');
+    include('includes//swift/lib/swift_required.php');
     include('Configuration.php');
     include('includes/klogger.class.php');
     
@@ -302,44 +302,31 @@
         //Generate email, inheriting the values of constants from Configuration.php. The $type of email generated is either a registration confirmation or a password reset.
         private function generate_email($email, $type, $random_hash)
         {
-            $mail = new PHPMailer();
-            $mail->Username = SMTP_USERNAME;                         
-            $mail->Password = SMTP_PASSWORD;                     
-            $mail->From = SENDER_ADDRESS;                       
-            $mail->FromName = FROM_NAME;
-            $mail->AddAddress($email);        
-            $mail->AddReplyTo(REPLY_TO);   
-            $mail->WordWrap = WORD_WRAP;
-            $mail->Host = SMTP_SERVERS;
-            $mail->Port = PORT;
-            $mail->SMTPSecure = SMTP_SECURE;
-            
-            if(IS_SMTP === 'TRUE')
-            {
-                $mail->IsSMTP();
-            }                                   
-            
-            if(SMTP_AUTH === 'TRUE')
-            {    
-                $mail->SMTPAuth = true;
-            }                              
-            
-            if(IS_HTML === 'TRUE')
-            {                                   
-                $mail->IsHTML(true);
-            }
-            
+            $transport = Swift_SmtpTransport::newInstance(SMTP_SERVER, PORT, SECURITY)
+				->setUsername(SMTP_USERNAME)
+				->setPassword(SMTP_PASSWORD);
+					
+			$swift = Swift_Mailer::newInstance($transport);
+				
+			
+				
+			return $swift->send($message);
+                        
             if($type == 'registration')
             {                                    
-                $mail->Subject = REGISTRATION_SUBJECT;
-                $mail->Body = REGISTRATION_BODY;
-                $mail->AltBody = REGISTRATION_ALT_BODY;
+                $message = Swift_Message::newInstance()
+				->setFrom(SENDER_ADDRESS)
+				->setTo($email)
+				->setSubject(REGISTRATION_SUBJECT)
+				->setBody(REGISTRATION_BODY);
             }
             elseif($type == 'reset')
             {
-                $mail->Subject = RESET_SUBJECT;
-                $mail->Body = RESET_BODY;
-                $mail->AltBody = RESET_ALT_BODY;
+                $message = Swift_Message::newInstance()
+				->setFrom(SENDER_ADDRESS)
+				->setTo($email)
+				->setSubject(RESET_SUBJECT)
+				->setBody(RESET_BODY);
             }
             else
             {
@@ -347,12 +334,11 @@
             }
             
             //Replace the $random_hash placeholder in the Body's URL with the actual hash.
-            $mail->Body = str_replace('$random_hash', $random_hash, $mail->Body, $counter_one);
-            $mail->AltBody = str_replace('$random_hash', $random_hash, $mail->AltBody, $counter_two);
+            $message->setBody = str_replace('$random_hash', $random_hash, $message->getBody, $counter);
             
-            if(($counter_one + $counter_two) != 2)
+            if(($counter) != 1)
             {
-                echo GENERATE_EMAIL_MISSING_VARIABLE;
+                $log->logFatal('The $random_hash variable from the URL in the email bodies was modified/removed');
             }
                         
             return $mail;
