@@ -25,6 +25,7 @@
         //Start a database connection.
         public function __construct()
         {
+			$log = new Klogger(LOG_DIRECTORY);
             $this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name);
             
             if($this->mysqli->connect_error)
