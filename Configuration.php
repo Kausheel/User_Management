@@ -40,27 +40,4 @@
     define('RESET_SUBJECT', 'You have reset your password');
     define('RESET_BODY', 'To reset your password, please click the link below, and follow the steps to create a new password: <br> http://name_of_your_website.com/test.php?hash=$random_hash');
     define('RESET_ALT_BODY', 'This body will be shown when the email client does not support HTML');
-    
-    //Define the error messages echoed to the browser for each circumstance. We define them here so that the wording of error messages can be easily modified, without having to edit the actual code.
-    //This is an effort to separate Logic from Presentation. 
-    //If you don't want an error message to be echoed out at all, just delete the 2nd parameter of the function call to make it an empty string, but don't delete the function or constant itself. 
-    //Example define('CONSTANT_NAME', ''); Don't delete the whole line, otherwise an E_NOTICE error will be thrown for attempting to call an undefined constant. 
-    //The naming convention for the CONSTANTS is to name the function first, then the error itself.
-    define('DATABASE_CONNECTION_ERROR', 'Please check your MySQL connection settings in the Configuration file, and try again.');
-    define('CREATE_USER_MALFORMED_EMAIL', 'The email address you entered is invalid. Please go back and try again.');
-    define('CREATE_USER_MISSING_PARAMETER', 'You cannot leave the email or password fields blank');
-    define('CREATE_USER_DATABASE_ERROR', 'Error inserting data. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');
-    define('LOGIN_UNVERIFIED_ACCOUNT', 'Please check your email for a link to activate your account.');
-    define('LOGIN_FAILED', 'Login failed. Wrong email/password combination.');
-    define('LOGIN_DATABASE_ERROR', 'MySQL error. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');
-    define('CHANGE_PASSWORD_WRONG_PASSWORD', 'The password you entered was incorrect. Your password was not changed.');
-    define('CHANGE_PASSWORD_MISSING_PARAMETERS', 'You must fill in all fields. Your password was not changed.');
-    define('RESET_PASSWORD_MISSING_PARAMETER', 'Please enter your email address to reset your password');
-    define('RESET_PASSWORD_DATABASE_ERROR', 'Error inserting data. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');
-    define('RESET_PASSWORD_MALFORMED_EMAIL', 'The email address you entered is invalid. Please go back and try again.');    
-    define('SET_PASSWORD_MISSING_PARAMETERS', 'You left a field blank! Please go back and try again.');
-    define('SET_PASSWORD_DATABASE_ERROR', 'Error inserting data. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');
-    define('ACTIVATE_ACCOUNT_MISSING_PARAMETER', 'No hash found.');
-    define('ACTIVATE_ACCOUNT_DATABASE_ERROR', 'Error inserting data. Ensure your Configuration file suits your database schema. This should NEVER appear to the user.');
-    define('GENERATE_EMAIL_MISSING_VARIABLE', 'You have accidentally replaced or renamed the $random_hash variable in the email body section of the Configuration file. It MUST exist somewhere in the email body.');
 ?>

@@ -39,7 +39,6 @@
         {
             if(!($email && $password))
             {
-                echo CREATE_USER_MISSING_PARAMETER;
                 return FALSE;
             }
             
@@ -55,7 +54,7 @@
             
             if($this->mysqli->error)
             {
-                echo CREATE_USER_DATABASE_ERROR;
+                $log->logFatal('Failed to create user', $this->mysqli->error);
                 return FALSE;   
             }
             
@@ -69,7 +68,7 @@
             }
             else
             {
-                echo CREATE_USER_MALFORMED_EMAIL;
+                $log->logFatal('Failed to send email on account creation');;
                 
                 //Rollback the database insertion.
                 $this->delete_user($email, $password);
@@ -82,7 +81,6 @@
         {
             if(!($email && $password))
             {
-                echo LOGIN_FAILED; 
                 return FALSE;
             }
             
@@ -95,7 +93,7 @@
               
             if($this->mysqli->error)
             {
-                echo LOGIN_DATABASE_ERROR;
+                $log->logFatal('Login failed', $this->mysqli->error);
                 return FALSE;
             }      
                               
@@ -103,14 +101,12 @@
             $encrypt = new Encrypt(12, FALSE);            
             if(!$encrypt->check_password($password, $stored_password))
             {
-                echo LOGIN_FAILED;
                 return FALSE;
             }
               
             //Check that the account has been activated through the emailed link.
             if($activated === 0)
             {
-                echo LOGIN_UNVERIFIED_ACCOUNT;
                 return FALSE;
             }
            
@@ -121,7 +117,6 @@
         {
             if(!($email && $old_password && $new_password))
             {
-                echo CHANGE_PASSWORD_MISSING_PARAMETERS;
                 return FALSE;
             }
              
@@ -132,8 +127,7 @@
             }
             else 
             {
-                echo CHANGE_PASSWORD_WRONG_PASSWORD;
-                return FALSE;   
+                return FALSE; 
             }            
         }       
         
@@ -142,7 +136,6 @@
         {
             if(!$email)
             {
-                echo RESET_PASSWORD_MISSING_PARAMETER;
                 return FALSE;
             }
             
@@ -158,7 +151,7 @@
 
             if($this->mysqli->error)
             {
-                echo RESET_PASSWORD_DATABASE_ERROR;
+                $log->logFatal('Error inserting $random_hash', $this->mysqli->error);
                 return FALSE;
             }
             
@@ -167,7 +160,7 @@
                 
             if(!$mail->Send())
             {
-                echo RESET_PASSWORD_MALFORMED_EMAIL;
+                $log->logFatal('Failed to send reset password email');
                 
                 //Rollback changes to database.
                 $this->mysqli->query("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = '' WHERE `$this->emailed_hash_col` = '$random_hash'");
@@ -233,7 +226,6 @@
         {
             if(!($email && $password))
             {
-                echo SET_PASSWORD_MISSING_PARAMETERS;    
                 return FALSE;
             }             
                 
@@ -250,7 +242,7 @@
             }
             else
             {
-                echo SET_PASSWORD_DATABASE_ERROR;
+                $log->logFatal('Error setting new password', $this->mysqli->error);
                 return FALSE;
             }
         }       
@@ -259,7 +251,6 @@
         {
             if(!$hash)
             {
-                echo ACTIVATE_ACCOUNT_MISSING_PARAMETER;
                 return FALSE;
             }
             
@@ -274,7 +265,7 @@
             }
             else
             {
-                echo ACTIVATE_ACCOUNT_DATABASE_ERROR;
+                $log->logFatal('Error setting Account Activated to true', $this->mysqli->error);
                 return FALSE;
             }
         }
