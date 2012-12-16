@@ -1,6 +1,6 @@
 <?php
 	//Define the location to store the log files.
-	define('LOG_DIRECTORY', '/var/log');
+	define('LOG_DIRECTORY', 'logs');
 	
     //Define the database/table/column structure here, to be inherited by the Authenticate class.
     //Column for PASSWORD_HASHES must be 60 characters wide, ACCOUNT_ACTIVATION 1 character, and EMAILED_HASHES 37 characters.

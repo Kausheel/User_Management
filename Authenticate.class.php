@@ -3,7 +3,7 @@
     include('includes/Encrypt.class.php');
     include('includes/PHP_mailer.class.php');
     include('Configuration.php');
-    include('klogger.class.php');
+    include('includes/klogger.class.php');
     
     class Authenticate 
     {
@@ -25,12 +25,13 @@
         //Start a database connection.
         public function __construct()
         {
-            $log = new Klogger(LOG_DIRECTORY);
+            $log = new Klogger(LOG_DIRECTORY, 7);
+            
             $this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name);
             
             if($this->mysqli->connect_error)
             {
-                echo DATABASE_CONNECTION_ERROR;   
+                $log->logFatal('The database connection failed', $this->mysqli->connect_error);   
             }            
         }
         
