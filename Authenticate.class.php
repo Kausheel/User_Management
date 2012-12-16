@@ -3,6 +3,7 @@
     include('includes/Encrypt.class.php');
     include('includes/PHP_mailer.class.php');
     include('Configuration.php');
+    include('klogger.class.php');
     
     class Authenticate 
     {
