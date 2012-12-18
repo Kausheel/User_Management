@@ -1,8 +1,8 @@
 <?php
 
-    include('includes/Encrypt.class.php');
+    include('includes/encrypt.class.php');
     include('includes/swift/lib/swift_required.php');
-    include('Configuration.php');
+    include('configuration.php');
     include('includes/klogger.class.php');
     
     class Authenticate 
