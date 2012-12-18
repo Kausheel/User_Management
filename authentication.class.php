@@ -326,7 +326,7 @@
             }
             
             //Replace the $random_hash placeholder in the Body's URL with the actual hash.
-            $message->setBody() = str_replace('$random_hash', $random_hash, $message->getBody(), $counter);
+            $message->setBody(str_replace('$random_hash', $random_hash, $message->getBody(), $counter));
             
             if(($counter) != 1)
             {
