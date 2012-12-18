@@ -1,7 +1,7 @@
 <?php
 
     include('includes/Encrypt.class.php');
-    include('includes//swift/lib/swift_required.php');
+    include('includes/swift/lib/swift_required.php');
     include('Configuration.php');
     include('includes/klogger.class.php');
     
