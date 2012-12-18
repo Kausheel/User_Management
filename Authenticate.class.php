@@ -62,14 +62,12 @@
             $mail = $this->generate_email($email, 'registration', $random_hash);
                 
             //Send the email.
-            if($mail->Send())
+            if($mail)
             {
                 return TRUE;
             }
             else
-            {
-                $log->logFatal('Failed to send email on account creation');;
-                
+            {                
                 //Rollback the database insertion.
                 $this->delete_user($email, $password);
                 
@@ -158,10 +156,8 @@
             //Generate email.
             $mail = $this->generate_email($email, 'reset', $random_hash);
                 
-            if(!$mail->Send())
-            {
-                $log->logFatal('Failed to send reset password email');
-                
+            if(!$mail)
+            {                
                 //Rollback changes to database.
                 $this->mysqli->query("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = '' WHERE `$this->emailed_hash_col` = '$random_hash'");
                 
@@ -307,10 +303,6 @@
 				->setPassword(SMTP_PASSWORD);
 					
 			$swift = Swift_Mailer::newInstance($transport);
-				
-			
-				
-			return $swift->send($message);
                         
             if($type == 'registration')
             {                                    
@@ -341,7 +333,23 @@
                 $log->logFatal('The $random_hash variable from the URL in the email bodies was modified/removed');
             }
                         
-            return $mail;
+            if(!$swift->send($message))
+            {
+                if($type == 'reset')
+                {
+                    $log->logFatal('A password reset email failed to send');
+                    return FALSE;
+                }
+                elseif($type == 'registration')
+                {
+                    $log->logFatal('An account activation email failed to send');
+                    return FALSE;
+                }
+            }
+            else
+            {
+                return TRUE;
+            }
         }
     }
 
