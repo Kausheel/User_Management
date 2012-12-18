@@ -16,12 +16,10 @@
     define('COLUMN_WITH_EMAILED_HASHES', 'column_name');
 
     /*Define email settings. Emails are sent when the user registers, and when a password is reset.*/
-    define('IS_SMTP', 'TRUE');
-    define('SMTP_SERVERS', 'smtp1.example.com;smtp2.example.com');
-    define('SMTP_AUTH', 'TRUE');
+    define('SMTP_SERVER', 'smtp.example.com');
+    define('SECURITY', 'tsl');
     define('SMTP_USERNAME', 'my_username');
     define('SMTP_PASSWORD', 'my_password');
-    define('SMTP_SECURE', 'ssl');
     define('PORT', 1000);
     define('SENDER_ADDRESS', 'me@example.com');
     define('FROM_NAME', 'my_name');
