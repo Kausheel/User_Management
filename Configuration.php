@@ -15,7 +15,7 @@
     define('COLUMN_CONFIRMING_ACCOUNT_ACTIVATION', 'column_name');
     define('COLUMN_WITH_EMAILED_HASHES', 'column_name');
 
-    /*Define email settings. Emails are sent when the user registers, and when a password is reset.*/
+    //Define email settings. Emails are sent when the user registers, and when a password is reset.
     define('SMTP_SERVER', 'smtp.example.com');
     define('SECURITY', 'tsl');
     define('SMTP_USERNAME', 'my_username');
