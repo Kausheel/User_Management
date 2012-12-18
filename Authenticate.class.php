@@ -59,7 +59,7 @@
             }
             
             //Generate the email.
-            $mail = $this->generate_email($email, 'registration', $random_hash);
+            $mail = $this->send_email($email, 'registration', $random_hash);
                 
             //Send the email.
             if($mail)
@@ -154,7 +154,7 @@
             }
             
             //Generate email.
-            $mail = $this->generate_email($email, 'reset', $random_hash);
+            $mail = $this->send_email($email, 'reset', $random_hash);
                 
             if(!$mail)
             {                
@@ -296,7 +296,7 @@
         }           
         
         //Generate email, inheriting the values of constants from Configuration.php. The $type of email generated is either a registration confirmation or a password reset.
-        private function generate_email($email, $type, $random_hash)
+        private function send_email($email, $type, $random_hash)
         {
             $transport = Swift_SmtpTransport::newInstance(SMTP_SERVER, PORT, SECURITY)
 				->setUsername(SMTP_USERNAME)
