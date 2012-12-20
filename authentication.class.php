@@ -54,8 +54,8 @@
             $random_hash = $this->generate_random_hash();      
                        
             //Add the email, password, and random hash to the database. The $activated_col should be 0 by default, and 1 once the emailed link is clicked.
-            $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`, `$this->emailed_hash_col`, `$this->activated_col`) VALUES(?, ?, ?, ?)");   
-            $stmt->bind_param('sssi', $email, $password, $random_hash, 0);
+            $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`, `$this->emailed_hash_col`, `$this->activated_col`) VALUES(?, ?, ?, 0)");   
+            $stmt->bind_param('sss', $email, $password, $random_hash);
             $stmt->execute();
             
             if($this->mysqli->error)
