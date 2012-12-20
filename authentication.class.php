@@ -18,6 +18,7 @@
         private $activated_col = COLUMN_CONFIRMING_ACCOUNT_ACTIVATION;
         private $emailed_hash_col = COLUMN_WITH_EMAILED_HASHES;     
         private $mysqli;
+        private $log;
         
         //NOTE, there are many more CONSTANTS inherited from the Configuration file, containing various error messages to be outputted from this class. 
         //We store them externally so they are easily editable without having to go through this code, separating Logic from Presentation.
@@ -25,13 +26,13 @@
         //Start a database connection.
         public function __construct()
         {
-            $log = new Klogger(LOG_DIRECTORY, 7);
+            $this->log = new Klogger(LOG_DIRECTORY, 7);
             
             $this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name);
             
             if($this->mysqli->connect_error)
             {
-                $log->logFatal('The database connection failed', $this->mysqli->connect_error);   
+                $this->log->logFatal('The database connection failed', $this->mysqli->connect_error);   
             }            
         }
         
@@ -54,7 +55,7 @@
             
             if($this->mysqli->error)
             {
-                $log->logFatal('Failed to create user', $this->mysqli->error);
+                $this->log->logFatal('Failed to create user', $this->mysqli->error);
                 return FALSE;   
             }
             
@@ -70,6 +71,8 @@
             {                
                 //Rollback the database insertion.
                 $this->delete_user($email, $password);
+                
+                $this->log->logFatal('Failed to send account activation email');
                 
                 return FALSE;
             }        
@@ -91,7 +94,7 @@
               
             if($this->mysqli->error)
             {
-                $log->logFatal('Login failed', $this->mysqli->error);
+                $this->log->logFatal('Login failed', $this->mysqli->error);
                 return FALSE;
             }      
                               
@@ -149,7 +152,7 @@
 
             if($this->mysqli->error)
             {
-                $log->logFatal('Error inserting $random_hash', $this->mysqli->error);
+                $this->log->logFatal('Error inserting $random_hash', $this->mysqli->error);
                 return FALSE;
             }
             
@@ -238,7 +241,7 @@
             }
             else
             {
-                $log->logFatal('Error setting new password', $this->mysqli->error);
+                $this->log->logFatal('Error setting new password', $this->mysqli->error);
                 return FALSE;
             }
         }       
@@ -261,7 +264,7 @@
             }
             else
             {
-                $log->logFatal('Error setting Account Activated to true', $this->mysqli->error);
+                $this->log->logFatal('Error setting Account Activated to true', $this->mysqli->error);
                 return FALSE;
             }
         }
@@ -330,19 +333,19 @@
             
             if(($counter) != 1)
             {
-                $log->logFatal('The $random_hash variable from the URL in the email bodies was modified/removed');
+                $this->log->logFatal('The $random_hash variable from the URL in the email bodies was modified/removed');
             }
                         
             if(!$swift->send($message))
             {
                 if($type == 'reset')
                 {
-                    $log->logFatal('A password reset email failed to send');
+                    $this->log->logFatal('A password reset email failed to send');
                     return FALSE;
                 }
                 elseif($type == 'registration')
                 {
-                    $log->logFatal('An account activation email failed to send');
+                    $this->log->logFatal('An account activation email failed to send');
                     return FALSE;
                 }
             }
