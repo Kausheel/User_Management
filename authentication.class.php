@@ -43,7 +43,7 @@
                 return FALSE;
             }
             
-            if(check_duplicate_user($email))
+            if($this->check_duplicate_user($email))
             {
                 return FALSE;
             }
