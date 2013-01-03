@@ -226,18 +226,18 @@
             return TRUE;  
         }
         
-        public function set_password($email, $password)
+        public function set_password($email, $password, $emailed_hash)
         {
-            if(!($email && $password))
+            if(!($email && $password && $emailed_hash))
             {
                 return FALSE;
             }             
                 
             $password = $this->encrypt_password($password);
                
-            //Insert the password, and delete the emailed_hash column since we want it to be empty when we are not awaiting an email link to be clicked.
-            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ?, `$this->emailed_hash_col` = '' WHERE `$this->email_col` = ?");
-            $stmt->bind_param('ss', $password, $email);
+            //Insert the password, and delete the emailed_hash column since we want the link containing the hash to be dead after 1 use.
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ?, `$this->emailed_hash_col` = '' WHERE `$this->email_col` = ? AND `$this->emailed_hash_col` = ?");
+            $stmt->bind_param('sss', $password, $email, $emailed_hash);
             $stmt->execute();
                     
             if(!$this->mysqli->error)
