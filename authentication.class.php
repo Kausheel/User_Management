@@ -151,9 +151,6 @@
             }
             
             $random_hash = $this->generate_random_hash();
-            
-            //The 'reset' flag will be checked when the password reset link is clicked, to make sure the user did actually request a password reset.
-            $random_hash = 'reset'.$random_hash;
                             
             //Insert the $random_hash into the database.
             $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = ? WHERE `$this->email_col` = ?");
