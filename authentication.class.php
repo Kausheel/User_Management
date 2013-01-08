@@ -124,14 +124,22 @@
             }
              
             //Validate the $email/$password combination provided. 
-            if($this->login($email, $old_password))
+            if(!$this->login($email, $old_password))
             {
-                return $this->set_password($email, $new_password);
+                return FALSE;
             }
-            else 
+            
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ? WHERE `$this->email_col` = ?");
+            $stmt->bind_param('ss', $new_password, $email);
+            $stmt->execute();
+            
+            if($this->mysqli->error)
             {
-                return FALSE; 
-            }            
+                $this->log->logFatal('Failed to change password', $this->mysqli->error);
+                return FALSE;
+            }
+            
+            return TRUE;
         }       
         
         //Email a password reset link embedded with a unique hash.
