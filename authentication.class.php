@@ -192,33 +192,6 @@
             return TRUE;
         }
         
-        //When the GET variable is found in the URL, a user has either clicked a password reset link, OR an email validation link. This function will check the hash and return the type. 
-        public function check_hash_type($hash)
-        {
-            //Attempt to find the URL hash in the database. If it exists, bind_result($stored_hash) should be identical to the parameter $hash. If not, the hash doesn't exist, so return FALSE.
-            //A non-existent hash means the user must've malformed the hash in the URL manually.
-            $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col`, `$this->activated_col` FROM `$this->user_table` WHERE `$this->emailed_hash_col` = ?");
-            $stmt->bind_param('s', $hash);
-            $stmt->execute();
-            $stmt->bind_result($stored_hash, $activated);
-            $stmt->fetch();
-                    
-            if($hash != $stored_hash)
-            {
-                return FALSE;
-            }
-                
-            //If the $activated_col === 0, then user must've clicked an account activation link.
-            if($activated === 0)
-            {
-                return 'unverified';
-            }
-            elseif(strpos($hash, 'reset') !== FALSE) 
-            {
-                return 'reset';   
-            }                 
-        }
-        
         public function logout() 
         {
             session_start();
