@@ -163,7 +163,7 @@
                 return FALSE;
             }
             
-            //Generate email.
+            //Generate and send email.
             $mail = $this->send_email($email, 'reset', $random_hash);
                 
             if(!$mail)
