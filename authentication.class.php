@@ -177,6 +177,31 @@
             return TRUE;
         }
         
+        public function hash_exists($hash)
+        {
+            if(!$hash)
+            {
+                return FALSE;
+            }
+            
+            $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->emailed_hash_col` = ?");
+            $stmt->bind_param('s', $hash);
+            $stmt->execute();
+            $stmt->bind_result($result);
+            $stmt->fetch();
+            
+            if($this->mysqli->error)
+            {
+                $this->log->logFatal('Failed to check if hash exists', $this->mysqli->error);
+                return FALSE;
+            }
+            
+            if($hash == $result)
+            {
+                return TRUE;
+            }
+        }
+        
         public function delete_user($email, $password)
         {
             //Validate the $email/$password combination provided.
