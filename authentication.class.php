@@ -201,29 +201,27 @@
             return TRUE;  
         }
         
-        public function set_password($email, $password, $emailed_hash)
+        public function set_password($new_password, $emailed_hash)
         {
-            if(!($email && $password && $emailed_hash))
+            if(!($new_password && $emailed_hash))
             {
                 return FALSE;
-            }             
-                
-            $password = $this->encrypt_password($password);
+            }
+           
+            $new_password = $this->encrypt_password($new_password);
                
             //Insert the password, and delete the emailed_hash column since we want the link containing the hash to be dead after 1 use.
-            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ?, `$this->emailed_hash_col` = '' WHERE `$this->email_col` = ? AND `$this->emailed_hash_col` = ?");
-            $stmt->bind_param('sss', $password, $email, $emailed_hash);
+            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ?, `$this->emailed_hash_col` = '' WHERE `$this->emailed_hash_col` = ?");
+            $stmt->bind_param('ss', $new_password, $emailed_hash);
             $stmt->execute();
                     
-            if(!$this->mysqli->error)
-            {
-                return TRUE;
-            }
-            else
+            if($this->mysqli->error)
             {
                 $this->log->logFatal('Error setting new password', $this->mysqli->error);
                 return FALSE;
             }
+            
+            return TRUE;
         }       
         
         public function activate_account($hash)
