@@ -298,24 +298,33 @@
 				->setPassword(SMTP_PASSWORD);
 					
 			$swift = Swift_Mailer::newInstance($transport);
-                        
-            if($type == 'registration')
-            {                                    
-                $message = Swift_Message::newInstance()
-				->setFrom(SENDER_ADDRESS)
-				->setTo($email)
-				->setSubject(REGISTRATION_SUBJECT)
-				->setBody(REGISTRATION_BODY);
+            
+            //This try/catch block only exists because there is no way to turn off exception handling in SwiftMailer. Therefore we have to catch any exception SwiftMailer throws
+            //to prevent the user seeing an Uncaught Exception error.
+            try
+            {            
+                if($type == 'registration')
+                {                                    
+                    $message = Swift_Message::newInstance()
+                    ->setFrom(SENDER_ADDRESS)
+                    ->setTo($email)
+                    ->setSubject(REGISTRATION_SUBJECT)
+                    ->setBody(REGISTRATION_BODY);
+                }
+                elseif($type == 'reset')
+                {
+                    $message = Swift_Message::newInstance()
+                    ->setFrom(SENDER_ADDRESS)
+                    ->setTo($email)
+                    ->setSubject(RESET_SUBJECT)
+                    ->setBody(RESET_BODY);
+                }
+                else
+                {
+                    return FALSE;
+                }
             }
-            elseif($type == 'reset')
-            {
-                $message = Swift_Message::newInstance()
-				->setFrom(SENDER_ADDRESS)
-				->setTo($email)
-				->setSubject(RESET_SUBJECT)
-				->setBody(RESET_BODY);
-            }
-            else
+            catch(Exception $e)
             {
                 return FALSE;
             }
