@@ -41,17 +41,17 @@ It is the developer's responsibility to have another password field, probably ca
 It is also the developer's responsibility to make sure the password is strong enough e.g. minimum number of characters. However this isn't a huge necessity because the password hashes (using bcrypt) are 60 characters anyway.
 The create_user() function will return FALSE when the email address is invalid and the email fails to send, or when the email address has already been used to create an account.
 
-    $auth->create_user($email, $password);  
+    $auth->create_user($email, $password)  
 
 The login() function will return TRUE if the $email/$password combination is correct, and FALSE on failure.  
 
-    if($auth->login($email, $password) {echo 'Successful login.';}
+    $auth->login($email, $password)
 
 The existing email/password combination is checked before the password is changed, so an error is returned if the user's email/old_password combination is invalid.  
 
-    $auth->change_password($email, $old_password, $new_password);
+    $auth->change_password($email, $old_password, $new_password)
 
-When the user needs a forgotten password to be reset, ask for their email address. If the supplied email is matched in the database, we send that email a link. The link will contain a unique hash which corresponds to their email address in the database.
+When the user needs a forgotten password to be reset, ask for their email address. If the supplied email is matched in the database, we send that email a link. The link will contain a unique hash which corresponds to their email address in the database. 
 This will not work if the user tries to reset their password to an email that does not exist in the database. They MUST use the email address they supplied when creating their account, else this function will return FALSE.
 When the reset_password() function is called, the existing password IS STILL VALID. I allowed this because sometimes a user asks for a password reset, but then remembers their old password, and tries to login with that.
 
