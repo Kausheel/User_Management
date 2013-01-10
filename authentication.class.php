@@ -73,9 +73,7 @@
             {                
                 //Rollback the database insertion.
                 $this->delete_user($email, $password);
-                
-                $this->log->logFatal('Failed to send account activation email');
-                
+                                
                 return FALSE;
             }        
         }
