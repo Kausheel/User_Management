@@ -204,14 +204,13 @@
         
         public function delete_user($email, $password)
         {
-            //Validate the $email/$password combination provided.
-            if(!$this->login($email, $password))
+            if(!($email && $password))
             {
                 return FALSE;
             }
             
-            $stmt = $this->mysqli->prepare("DELETE FROM `$this->user_table` WHERE `$this->email_col` = ?");
-            $stmt->bind_param('s', $email);
+            $stmt = $this->mysqli->prepare("DELETE FROM `$this->user_table` WHERE `$this->email_col` = ? AND `$this->password_col` = ?");
+            $stmt->bind_param('ss', $email, $password);
             $stmt->execute();
                 
             return TRUE;
