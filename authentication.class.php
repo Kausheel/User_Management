@@ -126,7 +126,9 @@
             {
                 return FALSE;
             }
-            
+
+            $new_password = $this->encrypt_password($new_password);
+
             $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->password_col` = ? WHERE `$this->email_col` = ?");
             $stmt->bind_param('ss', $new_password, $email);
             $stmt->execute();
