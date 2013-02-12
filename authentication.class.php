@@ -41,7 +41,7 @@
                 return FALSE;
             }
 
-            if($this->check_duplicate_user($email))
+            if($this->is_registered($email))
             {
                 return FALSE;
             }
@@ -364,20 +364,6 @@
             {
                 $this->log->logFatal('Error setting Account Activated to true', $this->mysqli->error);
                 return FALSE;
-            }
-        }
-
-        private function check_duplicate_user($email)
-        {
-            $stmt = $this->mysqli->prepare("SELECT `$this->email_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
-            $stmt->bind_param('s', $email);
-            $stmt->execute();
-            $stmt->bind_result($duplicate_user);
-            $stmt->fetch();
-
-            if($duplicate_user == $email)
-            {
-                return TRUE;
             }
         }
 
