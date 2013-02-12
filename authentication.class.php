@@ -17,6 +17,7 @@
         private $password_col = COLUMN_WITH_PASSWORD_HASHES;
         private $activated_col = COLUMN_CONFIRMING_ACCOUNT_ACTIVATION;
         private $emailed_hash_col = COLUMN_WITH_EMAILED_HASHES;
+        private $encryption_rounds = ENCRYPTION_ROUNDS;
         private $mysqli;
         private $log;
 
@@ -382,7 +383,7 @@
 
         private function encrypt_password($password)
         {
-            $encrypt = new Encrypt(12, FALSE);
+            $encrypt = new Encrypt($this->encryption_rounds, FALSE);
             $password = $encrypt->hash_password($password);
 
             return $password;

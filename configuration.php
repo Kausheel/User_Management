@@ -14,6 +14,7 @@
     define('COLUMN_WITH_PASSWORD_HASHES', 'column_name');
     define('COLUMN_CONFIRMING_ACCOUNT_ACTIVATION', 'column_name');
     define('COLUMN_WITH_EMAILED_HASHES', 'column_name');
+    define('ENCRYPTION_ROUNDS', 12);
 
     //Define email settings. Emails are sent when the user registers, and when a password is reset.
     define('SMTP_SERVER', 'smtp.example.com');
