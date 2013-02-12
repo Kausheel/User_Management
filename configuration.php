@@ -1,10 +1,10 @@
 <?php
 	//Define the location to store the log files.
 	define('LOG_DIRECTORY', 'logs');
-	
+
     //Define the database/table/column structure here, to be inherited by the Authenticate class.
     //Column for EMAILS must be 254 characters wide, PASSWORD_HASHES must be 60 characters wide, ACCOUNT_ACTIVATION 1 character, and EMAILED_HASHES 32 characters.
-    //NOTE: If you do not set these values correctly, you'll receive ambiguous errors like 'Call to a member function bind_param on a non-object.'  
+    //NOTE: If you do not set these values correctly, you'll receive ambiguous errors like 'Call to a member function bind_param on a non-object.'
     define('DB_HOST', 'localhost');
     define('DB_USERNAME', 'my_username');
     define('DB_PASSWORD', 'my_password');
@@ -23,13 +23,13 @@
     define('PORT', 1000);
     define('SENDER_ADDRESS', 'me@example.com');
     define('FROM_NAME', 'my_name');
-    
+
     //Define the subject and body when an email is sent to confirm registration. The $random_hash embedded in the URL will be str_replaced in the create_user() function.
     //Do NOT modify/remove the $random_hash variable, or else an error will be logged.
-    define('REGISTRATION_SUBJECT', 'Thank you for registering!'); 
+    define('REGISTRATION_SUBJECT', 'Thank you for registering!');
     define('REGISTRATION_BODY', 'Please click the link below to activate your account: http://name_of_your_website.com/confirm.php?hash=$random_hash');
-    
-    //Define the subject and body when a user resets their password. The $random_hash embedded in the URL will be str_replaced in the reset_password() function. 
+
+    //Define the subject and body when a user resets their password. The $random_hash embedded in the URL will be str_replaced in the reset_password() function.
     //Do NOT modify/remove the $random_hash variable, or else an error will be logged.
     define('RESET_SUBJECT', 'You have reset your password');
     define('RESET_BODY', 'To reset your password, please click the link below, and follow the steps to create a new password: http://name_of_your_website.com/reset.php?hash=$random_hash');
