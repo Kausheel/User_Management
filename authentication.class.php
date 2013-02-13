@@ -160,7 +160,7 @@
             }
 
             //Check if the password hashes match
-            $encrypt = new Encrypt(12, FALSE);
+            $encrypt = new Encrypt($this->encryption_rounds, FALSE);
             if(!$encrypt->check_password($password, $stored_password))
             {
                 return FALSE;
