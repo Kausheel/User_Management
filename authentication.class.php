@@ -161,11 +161,12 @@
                 return FALSE;
             }
 
-            //Fetch the password and emailed_hash from database by matching the email. If there is no result, the $email does not exist.
-            $stmt = $this->mysqli->prepare("SELECT `$this->password_col`, `$this->emailed_hash_col`, `$this->activated_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
+            //Fetch the password from database by matching the email. If there is no result, the $email does not exist.
+            //Also fetch the account activation flag, because we don't allow someone to login if they haven't activated their account.
+            $stmt = $this->mysqli->prepare("SELECT `$this->password_col`, `$this->activated_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
             $stmt->bind_param('s', $email);
             $stmt->execute();
-            $stmt->bind_result($stored_password, $emailed_hash, $activated);
+            $stmt->bind_result($stored_password, $activated);
             $stmt->fetch();
 
             if($this->mysqli->error)
