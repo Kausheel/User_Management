@@ -211,17 +211,37 @@
                 return FALSE;
             }
 
-            $random_hash = $this->generate_random_hash();
-
-            //Insert the $random_hash into the database.
-            $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = ? WHERE `$this->email_col` = ?");
-            $stmt->bind_param('ss', $random_hash, $email);
+            //If the user accidentally or impatiently clicks the Submit button in a password reset form thinking it might not have worked the
+            //first time, because emails sometimes take a few minutes to send, they might trigger this function twice.
+            //An issue with that is a new $random_hash will be generated, inserted into the database, and emailed. This renders the previous
+            //$emailed_hash useless, so the user might click on the first email they received and wonder why it's not working. To prevent a new
+            //$random_hash being calculated, we check for an existing one first.
+            $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
+            $stmt->bind_param('s', $email);
             $stmt->execute();
+            $stmt->bind_result($random_hash);
+            $stmt->fetch();
 
             if($this->mysqli->error)
             {
-                $this->log->logFatal('Error inserting $random_hash', $this->mysqli->error);
+                $this->log->logFatal('Error checking for existing $random_hash in reset_password', $this->mysqli->error);
                 return FALSE;
+            }
+
+            if(!$random_hash)
+            {
+                $random_hash = $this->generate_random_hash();
+
+                //Insert the $random_hash into the database.
+                $stmt = $this->mysqli->prepare("UPDATE `$this->user_table` SET `$this->emailed_hash_col` = ? WHERE `$this->email_col` = ?");
+                $stmt->bind_param('ss', $random_hash, $email);
+                $stmt->execute();
+
+                if($this->mysqli->error)
+                {
+                    $this->log->logFatal('Error inserting $random_hash', $this->mysqli->error);
+                    return FALSE;
+                }
             }
 
             //Generate and send email.
