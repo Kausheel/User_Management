@@ -41,20 +41,35 @@
                 return FALSE;
             }
 
+            //If the user has already registered, and is trying again, it is possible that they lost the original email and is simply requesting a new one.
+            //In this case, we need to make sure the $emailed_hash we email to them is the same as the first one.
             if($this->is_registered($email))
             {
-                return FALSE;
+
+                $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col`, `$this->activated_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
+                $stmt->bind_param('s', $email);
+                $stmt->execute();
+                $stmt->bind_result($random_hash, $activated);
+                $stmt->fetch();
+
+                //If the user has already managed to activate their account, why would they try registering again?
+                if($activated)
+                {
+                    return FALSE;
+                }
             }
+            else
+            {
+                $password = $this->encrypt_password($password);
 
-            $password = $this->encrypt_password($password);
+                //To be sent in the email confirmation link.
+                $random_hash = $this->generate_random_hash();
 
-            //To be sent in the email confirmation link.
-            $random_hash = $this->generate_random_hash();
-
-            //Add the email, password, and random hash to the database. The $activated_col should be 0 by default, and 1 once the emailed link is clicked.
-            $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`, `$this->emailed_hash_col`, `$this->activated_col`) VALUES(?, ?, ?, 0)");
-            $stmt->bind_param('sss', $email, $password, $random_hash);
-            $stmt->execute();
+                //Add the email, password, and random hash to the database. The $activated_col should be 0 by default, and 1 once the emailed link is clicked.
+                $stmt = $this->mysqli->prepare("INSERT INTO `$this->user_table`(`$this->email_col`, `$this->password_col`, `$this->emailed_hash_col`, `$this->activated_col`) VALUES(?, ?, ?, 0)");
+                $stmt->bind_param('sss', $email, $password, $random_hash);
+                $stmt->execute();
+            }
 
             if($this->mysqli->error)
             {
