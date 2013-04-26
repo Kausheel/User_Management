@@ -30,7 +30,7 @@
 
             if($this->mysqli->connect_error)
             {
-                $this->log->logFatal('The database connection failed', $this->mysqli->connect_error);
+                $this->log->logCrit('The database connection failed', $this->mysqli->connect_error);
             }
         }
 
@@ -73,7 +73,7 @@
 
             if($this->mysqli->error)
             {
-                $this->log->logFatal('Failed to create user', $this->mysqli->error);
+                $this->log->logCrit('Failed to create user', $this->mysqli->error);
                 return FALSE;
             }
 
@@ -110,7 +110,7 @@
 
             if($this->mysqli->error)
             {
-                $this->log->logFatal('Failed to check if the user is_registered', $this->mysqli->error);
+                $this->log->logCrit('Failed to check if the user is_registered', $this->mysqli->error);
                 return FALSE;
             }
 
@@ -140,7 +140,7 @@
 
             if($this->mysqli->error)
             {
-                $this->log->logFatal('Failed to check if the user is_activated', $this->mysqli->error);
+                $this->log->logCrit('Failed to check if the user is_activated', $this->mysqli->error);
                 return FALSE;
             }
 
@@ -171,7 +171,7 @@
 
             if($this->mysqli->error)
             {
-                $this->log->logFatal('Login failed', $this->mysqli->error);
+                $this->log->logCrit('Login failed', $this->mysqli->error);
                 return FALSE;
             }
 
@@ -212,7 +212,7 @@
 
             if($this->mysqli->error)
             {
-                $this->log->logFatal('Failed to change password', $this->mysqli->error);
+                $this->log->logCrit('Failed to change password', $this->mysqli->error);
                 return FALSE;
             }
 
@@ -240,7 +240,7 @@
 
             if($this->mysqli->error)
             {
-                $this->log->logFatal('Error checking for existing $random_hash in reset_password', $this->mysqli->error);
+                $this->log->logCrit('Error checking for existing $random_hash in reset_password', $this->mysqli->error);
                 return FALSE;
             }
 
@@ -255,7 +255,7 @@
 
                 if($this->mysqli->error)
                 {
-                    $this->log->logFatal('Error inserting $random_hash', $this->mysqli->error);
+                    $this->log->logCrit('Error inserting $random_hash', $this->mysqli->error);
                     return FALSE;
                 }
             }
@@ -292,7 +292,7 @@
 
             if($this->mysqli->error)
             {
-                $this->log->logFatal('Failed to check if the user is_reset', $this->mysqli->error);
+                $this->log->logCrit('Failed to check if the user is_reset', $this->mysqli->error);
                 return FALSE;
             }
 
@@ -322,7 +322,7 @@
 
             if($this->mysqli->error)
             {
-                $this->log->logFatal('Failed to check if hash exists', $this->mysqli->error);
+                $this->log->logCrit('Failed to check if hash exists', $this->mysqli->error);
                 return FALSE;
             }
 
@@ -373,7 +373,7 @@
 
             if($this->mysqli->error)
             {
-                $this->log->logFatal('Error setting new password', $this->mysqli->error);
+                $this->log->logCrit('Error setting new password', $this->mysqli->error);
                 return FALSE;
             }
 
@@ -400,7 +400,7 @@
             }
             else
             {
-                $this->log->logFatal('Error setting Account Activated to true', $this->mysqli->error);
+                $this->log->logCrit('Error setting Account Activated to true', $this->mysqli->error);
                 return FALSE;
             }
         }
@@ -478,19 +478,19 @@
 
             if(($counter) != 1)
             {
-                $this->log->logFatal('The $random_hash variable from the URL in the email bodies was modified/removed');
+                $this->log->logCrit('The $random_hash variable from the URL in the email bodies was modified/removed');
             }
 
             if(!$swift->send($message))
             {
                 if($type == 'reset')
                 {
-                    $this->log->logFatal('A password reset email failed to send');
+                    $this->log->logCrit('A password reset email failed to send');
                     return FALSE;
                 }
                 elseif($type == 'registration')
                 {
-                    $this->log->logFatal('An account activation email failed to send');
+                    $this->log->logCrit('An account activation email failed to send');
                     return FALSE;
                 }
             }
