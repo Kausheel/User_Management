@@ -5,7 +5,7 @@
     include('configuration.php');
     include('includes/klogger.class.php');
 
-    class Authenticate
+    class User_Management
     {
         //The database settings and table structures are inherited from the Configuration.php file.
         private $db_host = DB_HOST;

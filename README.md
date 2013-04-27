@@ -1,6 +1,6 @@
-#Authentication
+#PHP User Management
 
-This is a PHP class giving you all the necessary functions for authenticating and managing users.
+This is a PHP class giving you all of the necessary functions for authenticating and managing users.
 
 ###API Summary:
 
@@ -43,31 +43,31 @@ It is the developer's responsibility to have another password field, probably ca
 It is also the developer's responsibility to make sure the password is strong enough e.g. minimum number of characters. However this isn't a huge necessity because the password hashes (using bcrypt) are 60 characters anyway.
 The create_user() function will return FALSE when the email address is invalid and the email fails to send, or when the email address has already been used to create an account.
 
-    $auth->create_user($email, $password)
+    $user->create_user($email, $password)
 
 The login() function will return TRUE if the $email/$password combination is correct, and FALSE on failure.
 
-    $auth->login($email, $password)
+    $user->login($email, $password)
 
 The existing email/password combination is checked before the password is changed, so an error is returned if the user's email/old_password combination is invalid.
 
-    $auth->change_password($email, $old_password, $new_password)
+    $user->change_password($email, $old_password, $new_password)
 
 When the user needs a forgotten password to be reset, ask for their email address. If the supplied email is matched in the database, we send that email a link. The link will contain a unique hash which corresponds to their email address in the database.
 This will not work if the user tries to reset their password to an email that does not exist in the database. They MUST use the email address they supplied when creating their account, else this function will return FALSE.
 When the reset_password() function is called, the existing password IS STILL VALID. I allowed this because sometimes a user asks for a password reset, but then remembers their old password, and tries to login with that.
 
-    $auth->reset_password($email);
+    $user->reset_password($email);
 
 When the account activation link OR password reset link has been sent, the URL will contain a variable called 'hash.' Example your_website.com/page.php?hash=5893465gfiuqirekgheo5928re5try5y.
 You should check that the $_GET['hash'] variable exists in the database using hash_exists() on the same page that you linked to the user (the link sent in the email is defined in the Configuration file).
 hash_exists() returns FALSE when the hash doesn't exist in the database, either because the URL was modified from the original emailed one, or because the link was already clicked and a new password already chosen, so the link is now invalid. We have to include the $_GET['hash'] as a variable in this form because when the form is submitted, we will need to include it as a parameter for the set_password() function.
 
     //This is the page that the user is linked from their email after a password reset.
-    include('authentication.class.php');
-    $auth = new Authenticate();
+    include('user_management.class.php');
+    $user = new User_Management();
 
-    if($auth->hash_exists($_GET['hash']))
+    if($user->hash_exists($_GET['hash']))
     {
         echo "<form method='post'>
                 <input type='password' name='password'>
@@ -81,7 +81,7 @@ And now when the user clicks submit we check the passwords match, and then call 
 
     if($_POST['password'] == $_POST['confirm_password'])
     {
-        if($auth->set_password($_POST['password'], $_POST['hash']))
+        if($user->set_password($_POST['password'], $_POST['hash']))
         {
             echo 'Password successfully reset!';
         }
@@ -90,12 +90,12 @@ And now when the user clicks submit we check the passwords match, and then call 
 The activate_account() function changes the value of the boolean database column 'activated' to 1. It also deletes the emailed_hash column, so the emailed link is now dead.
 
     //This is the page which the user is linked to in their account activation email.
-    include('authentication.class.php');
-    $auth = new Authenticate();
+    include('user_management.class.php');
+    $user = new User_Management();
 
-    if($auth->hash_exists($_GET['hash']))
+    if($user->hash_exists($_GET['hash']))
     {
-        if($auth->activate_account($_GET['hash']))
+        if($user->activate_account($_GET['hash']))
         {
             echo 'Your account has been activated!';
         }
@@ -103,8 +103,8 @@ The activate_account() function changes the value of the boolean database column
 
 To destroy all session variables.
 
-    $auth->logout();
+    $user->logout();
 
 Call delete_user() to delete the user's row from the database. The correct $email/$password combination for the user must be given for the function to return TRUE.
 
-    $auth->delete_user($email, $password);
+    $user->delete_user($email, $password);
