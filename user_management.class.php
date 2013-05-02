@@ -274,39 +274,6 @@
             return TRUE;
         }
 
-        //Check if a user has requested a password reset, but not yet chosen a new password.
-        public function is_reset($email)
-        {
-            if(!$email)
-            {
-                return FALSE;
-            }
-
-            //We need to check if the user has activated their account, because if they haven't, the emailed_hash_col will hold an account activation hash,
-            //not a reset password hash, therefore the user is NOT trying to reset their password.
-            $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col` FROM `$this->user_table` WHERE `$this->activated_col` = 1 AND `$this->email_col` = ?");
-            $stmt->bind_param('s', $email);
-            $stmt->execute();
-            $stmt->bind_result($emailed_hash);
-            $stmt->fetch();
-
-            if($this->mysqli->error)
-            {
-                $this->log->logCrit('Failed to check if the user is_reset', $this->mysqli->error);
-                return FALSE;
-            }
-
-            //If the $emailed_hash exists in the database, the user has reset their password.
-            if($emailed_hash)
-            {
-                return TRUE;
-            }
-            else
-            {
-                return FALSE;
-            }
-        }
-
         public function hash_exists($hash)
         {
             if(!$hash)
