@@ -274,7 +274,7 @@
             return TRUE;
         }
 
-        public function hash_exists($hash)
+        private function hash_exists($hash)
         {
             if(!$hash)
             {

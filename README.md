@@ -31,7 +31,6 @@ This is a PHP class giving you all of the necessary functions for authenticating
 - Keep track of the number of login attempts, and block after a specified amount.
 - Create a function to allow the user to change their email address.
 - Allow a reply-to address to be added when sending emails.
-- Make hash_exists() a private function, to be called by set_password(), before it attempts to update the password.
 
 ###Notes:
 
