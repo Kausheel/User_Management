@@ -331,6 +331,11 @@
                 return FALSE;
             }
 
+            if(!$this->hash_exists($emailed_hash))
+            {
+                return FALSE;
+            }
+
             $new_password = $this->encrypt_password($new_password);
 
             //Insert the password, and delete the emailed_hash column since we want the link containing the hash to be dead after 1 use.
