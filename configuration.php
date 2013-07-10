@@ -24,6 +24,7 @@
     define('PORT', 1000);
     define('SENDER_ADDRESS', 'me@example.com');
     define('FROM_NAME', 'my_name');
+    define('REPLY_TO', 'reply_to_address');
 
     //Define the subject and body when an email is sent to confirm registration. The $random_hash embedded in the URL will be str_replaced in the create_user() function.
     //Do NOT modify/remove the $random_hash variable, or else an error will be logged.

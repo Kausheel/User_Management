@@ -420,7 +420,8 @@
                     ->setFrom(SENDER_ADDRESS)
                     ->setTo($email)
                     ->setSubject(REGISTRATION_SUBJECT)
-                    ->setBody(REGISTRATION_BODY);
+                    ->setBody(REGISTRATION_BODY)
+                    ->setReplyTo(REPLY_TO);
                 }
                 elseif($type == 'reset')
                 {
@@ -428,7 +429,8 @@
                     ->setFrom(SENDER_ADDRESS)
                     ->setTo($email)
                     ->setSubject(RESET_SUBJECT)
-                    ->setBody(RESET_BODY);
+                    ->setBody(RESET_BODY)
+                    ->setReplyTo(REPLY_TO);
                 }
                 else
                 {
