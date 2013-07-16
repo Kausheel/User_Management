@@ -246,6 +246,8 @@
 
             if(!$random_hash)
             {
+                $stmt->store_result();
+                
                 $random_hash = $this->generate_random_hash();
 
                 //Insert the $random_hash into the database.
