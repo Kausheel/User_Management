@@ -30,14 +30,13 @@ This is a PHP class giving you all of the necessary functions for authenticating
 - Let account activation through email be disabled.
 - Keep track of the number of login attempts, and block after a specified amount.
 - Create a function to allow the user to change their email address.
-- Allow a reply-to address to be added when sending emails.
 
 ###Notes:
 
 The functions here can return FALSE for 2 reasons:
     1. The return result was actually bad eg. a wrong username/password combination would make login() return FALSE.
     2. A internal error occured while executing the function, like a database access error.
-If anything goes wrong internally, it will be logged. You should regularly check your log files to track and eliminate internal errors. The log file location can be set in the Configuration file.
+If anything goes wrong internally, it will be logged. You should regularly check your log files to track and eliminate internal errors. The log file location can be set in the Configuration file. Please ensure the chosen log directory is writeable.
 
 ###Usage:
 
@@ -83,7 +82,7 @@ The existing email/password combination is checked before the password is change
     $user->change_password($email, $old_password, $new_password)
 
 When the user needs a forgotten password to be reset, ask for their email address. If the supplied email is matched in the database, we send that email a link. The link will contain a unique hash which is stored with their email address in the database.
-This will not work if the user tries to reset their password to an email that does not exist in the database. They MUST use the email address they supplied when creating their account, else this function will return FALSE.
+This will not work if the user tries to reset their password to an email that does not exist in the database. They MUST use the email address they supplied when creating their account, else this function will return FALSE. This function will also return FALSE if the user has not activated their account before requesting a password reset, so please ensure is_activated() returns TRUE before calling reset_password().
 When the reset_password() function is called, the existing password IS STILL VALID. This is allowed because sometimes a user asks for a password reset, but then remembers their old password, and attempts to login with that. If this function is called
 multiple times for the same user, for example if the user repeatedly clicks a "Reset" button, then this function will keep sending more emails. However, each email will contain a valid link, so it's not a problem. The hash will only be generated once,
 and then copied into subsequent emails, so it's not an issue if a user repeatedly clicks a "Reset" button when they get impatient, which they will if the email is taking too long to arrive and they get impatient.
