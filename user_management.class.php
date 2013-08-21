@@ -227,6 +227,12 @@
                 return FALSE;
             }
 
+            //Why would the user try to reset their password before activating their account?
+            if(!$this->is_activated($email))
+            {
+                return FALSE;
+            }
+
             //If the user accidentally or impatiently clicks the Submit button in a password reset form thinking it might not have worked the
             //first time, because emails sometimes take a few minutes to send, they might trigger this function twice.
             //An issue with that is a new $random_hash will be generated, inserted into the database, and emailed. This renders the previous
