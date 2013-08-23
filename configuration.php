@@ -9,6 +9,7 @@
     define('DB_USERNAME', 'my_username');
     define('DB_PASSWORD', 'my_password');
     define('DB_NAME', 'database_name');
+    define('DB_PORT', 3306);
     define('TABLE_WITH_USERS', 'table_name');
     define('COLUMN_WITH_EMAILS', 'column_name');
     define('COLUMN_WITH_PASSWORD_HASHES', 'column_name');

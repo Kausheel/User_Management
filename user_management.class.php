@@ -12,6 +12,7 @@
         private $db_username = DB_USERNAME;
         private $db_password = DB_PASSWORD;
         private $db_name = DB_NAME;
+        private $db_port = DB_PORT;
         private $user_table = TABLE_WITH_USERS;
         private $email_col = COLUMN_WITH_EMAILS;
         private $password_col = COLUMN_WITH_PASSWORD_HASHES;
@@ -26,7 +27,7 @@
         {
             $this->log = new Klogger(LOG_DIRECTORY, 7);
 
-            $this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name);
+            $this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name, $this->db_port);
 
             if($this->mysqli->connect_error)
             {
