@@ -315,8 +315,6 @@
                 return FALSE;
             }
 
-            $password = $this->encrypt_password($password);
-
             $stmt = $this->mysqli->prepare("DELETE FROM `$this->user_table` WHERE `$this->email_col` = ? AND `$this->password_col` = ?");
             $stmt->bind_param('ss', $email, $password);
             $stmt->execute();
