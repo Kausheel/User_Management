@@ -1,6 +1,5 @@
 <?php
 
-    include('includes/encrypt.class.php');
     include('includes/Swift/lib/swift_required.php');
     include('configuration.php');
     include('includes/klogger.class.php');
@@ -178,8 +177,7 @@
             }
 
             //Check if the password hashes match
-            $encrypt = new Encrypt($this->encryption_rounds, FALSE);
-            if(!$encrypt->check_password($password, $stored_password))
+            if(!password_verify($password, $stored_password))
             {
                 return FALSE;
             }
@@ -255,7 +253,7 @@
             if(!$random_hash)
             {
                 $stmt->store_result();
-                
+
                 $random_hash = $this->generate_random_hash();
 
                 //Insert the $random_hash into the database.
@@ -407,10 +405,9 @@
 
         private function encrypt_password($password)
         {
-            $encrypt = new Encrypt($this->encryption_rounds, FALSE);
-            $password = $encrypt->hash_password($password);
+            $encrypted_password = password_hash($password, PASSWORD_BCRYPT, ["cost" => $this->encryption_rounds]);
 
-            return $password;
+            return $encrypted_password;
         }
 
         //Generate a unique 32 character long hash. Called by create_user() and reset_password().
