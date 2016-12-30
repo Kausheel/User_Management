@@ -41,22 +41,9 @@
                 return FALSE;
             }
 
-            //If the user has already registered, and is trying again, it is possible that they lost the original email and is simply requesting a new one.
-            //In this case, we need to make sure the $emailed_hash we email to them is the same as the first one.
             if($this->is_registered($email))
             {
-
-                $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col`, `$this->activated_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
-                $stmt->bind_param('s', $email);
-                $stmt->execute();
-                $stmt->bind_result($random_hash, $activated);
-                $stmt->fetch();
-
-                //If the user has already managed to activate their account, why would they try registering again?
-                if($activated)
-                {
-                    return FALSE;
-                }
+                return FALSE;
             }
             else
             {
@@ -116,6 +103,39 @@
             }
 
             if($email_in_database == $email)
+            {
+                return TRUE;
+            }
+            else
+            {
+                return FALSE;
+            }
+        }
+
+        public function resend_activation_email($email)
+        {
+            $stmt = $this->mysqli->prepare("SELECT `$this->emailed_hash_col`, `$this->activated_col` FROM `$this->user_table` WHERE `$this->email_col` = ?");
+            $stmt->bind_param('s', $email);
+            $stmt->execute();
+            $stmt->bind_result($random_hash, $activated);
+            $stmt->fetch();
+
+            if($this->mysqli->error)
+            {
+                $this->log->logCrit('Failed to resend activation email', $this->mysqli->error);
+                return FALSE;
+            }
+
+            //If the user has already managed to activate their account, they don't need an account activation link
+            if($activated)
+            {
+                return FALSE;
+            }
+
+            //Generate the email.
+            $mail = $this->send_email($email, 'registration', $random_hash);
+
+            if($mail)
             {
                 return TRUE;
             }
