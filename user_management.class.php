@@ -89,7 +89,8 @@
             else
             {
                 //Rollback the database insertion.
-                $this->delete_user($email, $password);
+                //The 3rd parameter indicates that the password is encrypted
+                $this->delete_user($email, $password, TRUE);
 
                 return FALSE;
             }
@@ -308,18 +309,38 @@
             }
         }
 
-        public function delete_user($email, $password)
+        //Delete a user from the database after verifying that the user is authorised to delete the account
+        public function delete_user($email, $password, $is_password_encrypted = FALSE)
         {
             if(!($email && $password))
             {
                 return FALSE;
             }
 
-            $stmt = $this->mysqli->prepare("DELETE FROM `$this->user_table` WHERE `$this->email_col` = ? AND `$this->password_col` = ?");
-            $stmt->bind_param('ss', $email, $password);
-            $stmt->execute();
+            //The login() function requires an unencrypted password to validate the user
+            if($is_password_encrypted == FALSE)
+            {
+                //Check if the supplied credentials match
+                if($this->login($email, $password))
+                {
+                    $stmt = $this->mysqli->prepare("DELETE FROM `$this->user_table` WHERE `$this->email_col` = ?");
+                    $stmt->bind_param('s', $email);
+                    $stmt->execute();
 
-            return TRUE;
+                    return TRUE;
+                }
+            }
+            //If this function was called from inside this class (for example, to rollback user changes), then the supplied password may already be encrypted
+            //If the password is already encrypted, then we don't need to use the login() function
+            else
+            {
+                //Delete the user if the supplied credentials match
+                $stmt = $this->mysqli->prepare("DELETE FROM `$this->user_table` WHERE `$this->email_col` = ? AND `$this->password_col` = ?");
+                $stmt->bind_param('ss', $email, $password);
+                $stmt->execute();
+
+                return TRUE;
+            }
         }
 
         public function logout()
